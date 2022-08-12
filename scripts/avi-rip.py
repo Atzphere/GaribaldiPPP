@@ -23,15 +23,17 @@ def getFilesWIthPaths(dir):
         c += 1
     return to_process
 
+# cull: only take the images in the sequence at the indices indicated
 
-def aviToImage(file, output):
+def aviToImage(file, output, cull=[]): 
     frames = skvideo.io.vreader(file)
     i = 0
     for frame in frames:
-        skvideo.io.vwrite(
-            output + "\\" + os.path.basename(file) + str(i) + ".png", frame)
+        if ((not cull) or (i in cull)):
+            skvideo.io.vwrite(
+                output + "\\" + os.path.basename(file) + str(i) + ".png", frame)
         i += 1
 
 
 for video in getFilesWIthPaths(videos):
-    aviToImage(video,export)
+    aviToImage(video, export, [2])
