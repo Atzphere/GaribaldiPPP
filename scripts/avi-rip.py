@@ -8,7 +8,7 @@ def getParentDir(directory):
 
 
 current_dirs_parent = getParentDir(os.getcwd())
-cameras = current_dirs_parent + "\\data\\Cameras" # folder containing individual camera folders
+cameras = current_dirs_parent + "\\data\\cameras" # folder containing individual camera folders
 dest = current_dirs_parent + "\\export" # export folder
 ffmpeg_path = current_dirs_parent + "\\ffmpeg_1.4\\bin"
 skvideo.setFFmpegPath(ffmpeg_path)
@@ -41,8 +41,20 @@ For every camera folder: grab the nth frame(s) of every video file, put it into 
 
 ''' 
 for camera in getFilesWIthPaths(cameras):
-    videos = getFilesWIthPaths(camera)
-    export = dest + "\\" + os.path.basename(camera)
-    os.mkdir(export)
+    videos = getFilesWIthPaths(camera + "\\100MEDIA")
+    cameraName = os.path.basename(camera)
+    export = dest + "\\" + cameraName
+    i = 1
+    print("Starting processing: " + cameraName)
+
+    if (os.path.exists(export)):
+        print("Output folder already exists: " + export + ", writing to folder.")
+    else:
+        os.mkdir(export)
+        print("Created output folder " + export)
+
     for video in videos:
+        print("Processing " + os.path.basename(video) + 
+            " (" + str(i) + " of " + str(len(videos)) + ")")
         aviToImage(video, export, [2])
+        i += 1
