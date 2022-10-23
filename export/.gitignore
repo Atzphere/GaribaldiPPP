@@ -1,3 +1,5 @@
 *
 */
 !.gitignore
+!sequencify.sh
+!crush.sh
