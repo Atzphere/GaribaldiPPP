@@ -26,5 +26,5 @@ project_home = getParentDir(os.getcwd(), depth=2)
 camera_dir = project_home + "/Garibaldi_phenocams_Sept_2022/"
 
 print("working in {dir}".format(dir=project_home))
-print([x[0] for x in os.walk(camera_dir)])
+print([x[1] for x in os.walk(camera_dir)])
 print("generating worklist to process...")
