@@ -163,7 +163,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
 
     '''
     camera_name = os.path.dirname(camera_folder)
-    print("camera name {nm}".format(nm=camera_name))
+    print("camera folder{nm}".format(nm=camera_folder))
 
     source = camera_folder + data_folder
 
