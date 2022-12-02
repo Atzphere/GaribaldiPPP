@@ -201,7 +201,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         print("Output folder {cname} already exists, using this.".format(cname=camera_name))
 
     for index, frame in enumerate(results):
-        skvideo.io.vwrite(newpath + "{cname}_day{day}.jpg".
+        skvideo.io.vwrite(newpath + "/{cname}_day{day}.jpg".
                           format(cname=camera_name, day=(index + date_offset)), frame)
 
 
