@@ -9,19 +9,24 @@ from matplotlib import pyplot as plt
 
 keep_frame_num = 9
 
+
 def get_parent_dir(directory, depth=1):
     path = directory
     for i in range(0, depth):
         path = os.path.dirname(path)
     return path
 
+
 project_home = get_parent_dir(os.getcwd(), depth=2)
 os.chdir(project_home)
 workingdir = os.getcwd()
 camera_dir = workingdir + "/Garibaldi_phenocams_Sept_2022/"
 output_dir = workingdir + "/export/"
-errorNoColor = np.zeros((300,300, 3))
+errorNoColor = np.zeros((300, 300, 3))
 errorNoColor[:, :, 0] = 255
+
+problematics = {"CASS_14W": -2}  # date offsets
+
 
 def get_subdirs(directory, fullpath=False):
     '''
@@ -36,22 +41,23 @@ def get_subdirs(directory, fullpath=False):
                           Default value: False
     '''
     if fullpath:
-        return [os.path.join(directory, dI).replace("\\","/")
-        for dI in os.listdir(directory)
-        if os.path.isdir(os.path.join(directory ,dI))]
+        return [os.path.join(directory, dI).replace("\\", "/")
+                for dI in os.listdir(directory)
+                if os.path.isdir(os.path.join(directory, dI))]
     else:
-        return [dI.replace("\\","/") for dI in os.listdir(directory)
-        if os.path.isdir(os.path.join(directory ,dI))]
+        return [dI.replace("\\", "/") for dI in os.listdir(directory)
+                if os.path.isdir(os.path.join(directory, dI))]
+
 
 def avi_to_imgseq(avi, numframes=keep_frame_num):
     '''
     Returns a generator object of videos that can be iterated over
     i.e. to write to file, etc.
-    
+
     Takes the path of a video file (we use avi for our phenocams)
     numframes: int, number of frames to read, keep to bare minimum for
     fastest performance
-    
+
     if numframes is -1, process the entire video file.
 
     Parameters:
@@ -63,6 +69,7 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
         return skvideo.io.vreader(avi)
     else:
         return skvideo.io.vreader(avi, num_frames=numframes)
+
 
 def is_grayscale(frame, samplex=5, sampley=5):
     '''
@@ -82,8 +89,10 @@ def is_grayscale(frame, samplex=5, sampley=5):
 
     frame_width = np.size(frame, 0)
     frame_height = np.size(frame, 1)
-    x_sample_pts = np.around(np.linspace(0, frame_width - 1, samplex)).astype(int)
-    y_sample_pts = np.around(np.linspace(0, frame_height - 1, sampley)).astype(int)
+    x_sample_pts = np.around(np.linspace(
+        0, frame_width - 1, samplex)).astype(int)
+    y_sample_pts = np.around(np.linspace(
+        0, frame_height - 1, sampley)).astype(int)
 
     x, y = np.meshgrid(x_sample_pts, y_sample_pts)
     # plt.scatter(x, y)
@@ -125,8 +134,8 @@ def get_first_colored(frames):
 
 
 def process_camera(camera_folder, data_folder="/100MEDIA/",
-    output=output_dir, numframes=keep_frame_num, date_offset=0,
-    custom_file_name=""):
+                   output=output_dir, numframes=keep_frame_num, date_offset=0,
+                   custom_file_name=""):
     '''
     Procceses a camera folder i.e. CASS_10W by going into its
     image data folder (default is /100MEDIA/ on Apeman cameras)
@@ -161,20 +170,24 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
     generate worklist of files to process, resorting stuff to
     account for some cameras bugging out and restarting their counts.
     '''
-    files = [f for f in os.listdir(source) if os.path.isfile(os.path.join(source, f))]
+    files = [f for f in os.listdir(
+        source) if os.path.isfile(os.path.join(source, f))]
     sort_template = map((lambda f: ("zzzzz" + f) if "(" in f else f), files)
-    files_sorted = [s for _, s in sorted(zip(sort_template, files), key=lambda pair: pair[0])]
+    files_sorted = [s for _, s in sorted(
+        zip(sort_template, files), key=lambda pair: pair[0])]
 
     video_worklist = [os.path.join(source, f) for f in files]
 
-    print("processing {cname} ({num} files)".format(cname=camera_name, num=len(video_worklist)))
+    print("processing {cname} ({num} files)".format(
+        cname=camera_name, num=len(video_worklist)))
 
     results = p.map(lambda path: get_first_colored(avi_to_imgseq(path, numframes)),
-        video_worklist)
+                    video_worklist)
 
     for index, frame in enumerate(results):
         skvideo.io.vwrite(output + "{cname}_day{day}.jpg".
-            format(cname=camera_name, day=(index + date_offset)), frame)
+                          format(cname=camera_name, day=(index + date_offset)), frame)
+
 
 '''
 new procedure:
@@ -190,7 +203,7 @@ if __name__ == "__main__":
     print("working in {dir}".format(dir=project_home))
     print("target directory: {dir}".format(dir=output_dir))
     print("cameras folders found: {cams}\n ({num} total)"
-        .format(cams=get_subdirs(camera_dir), num=len(get_subdirs(camera_dir))))
+          .format(cams=get_subdirs(camera_dir), num=len(get_subdirs(camera_dir))))
 
     print("generating worklist to process...")
     worklist = get_subdirs(camera_dir, fullpath=True)
@@ -200,6 +213,8 @@ if __name__ == "__main__":
     p = mp.Pool(process_count)
     print("started")
     for camera in worklist:
-        process_camera(camera)
-
-
+        if os.path.dirname(camera) in problematics.keys():
+            process_camera(
+                camera, date_offset=problematics[os.path.dirname(camera)])
+        else:
+            process_camera(camera)
