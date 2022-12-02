@@ -162,7 +162,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
                                    Defaults to the camera folder name.
 
     '''
-    camera_name = os.path.dirname(camera_folder)
+    camera_name = os.path.basename(camera_folder)
     print("camera folder{nm}".format(nm=camera_folder))
 
     source = camera_folder + data_folder
@@ -223,8 +223,8 @@ if __name__ == "__main__":
     print("started")
     for camera in worklist:
         print(camera)
-        if os.path.dirname(camera) in problematics.keys():
+        if os.path.basename(camera) in problematics.keys():
             process_camera(
-                camera, date_offset=problematics[os.path.dirname(camera)])
+                camera, date_offset=problematics[os.path.basename(camera)])
         else:
             process_camera(camera)
