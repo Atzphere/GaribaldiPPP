@@ -2,7 +2,7 @@ import skvideo
 import skvideo.io
 import os
 import numpy as np
-import multiprocessing as mp
+import multiprocess as mp
 from matplotlib import pyplot as plt
 
 # only get the first 9 frames
