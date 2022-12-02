@@ -181,8 +181,15 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
     print("processing {cname} ({num} files)".format(
         cname=camera_name, num=len(video_worklist)))
 
-    results = p.map(lambda path: get_first_colored(avi_to_imgseq(path, numframes)),
-                    video_worklist)
+    def func_wrapper(path):
+        '''
+        needed for getting around pickling issues with multiprocessing and lambda
+
+        '''
+        return get_first_colored(avi_to_imgseq(path, numframes))
+
+
+    results = p.map(func_wrapper, video_worklist)
 
     for index, frame in enumerate(results):
         skvideo.io.vwrite(output + "{cname}_day{day}.jpg".
