@@ -206,12 +206,13 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
 
 
 '''
-new procedure:
-execute bash script to get manifest list of files in order for each camera - place this in each directory
-follow this file order instead of cameras 
-only get the first x frames 
-quantify light by getting average brightness
+Everything works!
+Todo:
+Add day number padding - makes sorting easier
 
+More verbose processing
+
+Write greenness stuff
 
 '''
 
