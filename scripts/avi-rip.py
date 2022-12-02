@@ -214,6 +214,7 @@ if __name__ == "__main__":
 
     print("generating worklist to process...")
     worklist = get_subdirs(camera_dir, fullpath=True)
+    print(worklist)
 
     process_count = mp.cpu_count()
     print("starting process pool: {num} workers.".format(num=process_count))
