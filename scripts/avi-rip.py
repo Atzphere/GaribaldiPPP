@@ -198,8 +198,8 @@ if __name__ == "__main__":
     process_count = mp.cpu_count()
     print("starting process pool: {num} workers.".format(num=process_count))
     p = mp.Pool(process_count)
-    process_camera("C:\\Users\\allen\\Documents\\Garibaldi ITEX\\Garibaldi_phenocams_Sept_2022\\Plot_photos\\CASS_Plot_photos_Aug9_2022\\CASS_9C")
-
-
+    print("started")
+    for camera in worklist:
+        process_camera(camera)
 
 
