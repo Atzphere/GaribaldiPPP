@@ -177,7 +177,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         zip(sort_template, files), key=lambda pair: pair[0])]
 
     video_worklist = [os.path.join(source, f) for f in files_sorted]
-    print("video worklist: {v}".format(v=video_worklist))
+    # print("video worklist: {v}".format(v=video_worklist))
 
     print("processing {cname} ({num} files)".format(
         cname=camera_name, num=len(video_worklist)))
