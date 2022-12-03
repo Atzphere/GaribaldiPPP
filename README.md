@@ -5,4 +5,4 @@ Also contains a suite of tools used for analyzing phenocam data - mainly trackin
 
 To run: move individual camera folders into /data/Cameras and build avi-rip.py.
 
-Requires [scikit-video](http://www.scikit-video.org/stable/io.html) and FFMPEG.
+Requires [scikit-video](http://www.scikit-video.org/stable/io.html), multiprocess, and cv2 packages. scikit-video needs FFMPEG.
