@@ -163,7 +163,6 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
 
     '''
     camera_name = os.path.basename(camera_folder)
-    print("camera folder{nm}".format(nm=camera_folder))
 
     source = camera_folder + data_folder
 
@@ -178,6 +177,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         zip(sort_template, files), key=lambda pair: pair[0])]
 
     video_worklist = [os.path.join(source, f) for f in files]
+    print("video worklist: {v}".format(v=video_worklist))
 
     print("processing {cname} ({num} files)".format(
         cname=camera_name, num=len(video_worklist)))
@@ -213,6 +213,8 @@ Add day number padding - makes sorting easier
 More verbose processing
 
 Write greenness stuff
+
+Look into possible dir creation thing not working as wanted?
 
 '''
 
