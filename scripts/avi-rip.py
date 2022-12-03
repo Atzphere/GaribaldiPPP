@@ -25,7 +25,7 @@ output_dir = workingdir + "/export/"
 errorNoColor = np.zeros((300, 300, 3))
 errorNoColor[:, :, 0] = 255
 
-problematics = {"CASS_14W": -2}  # date offsets
+problematics = {}  # date offsets
 
 
 def get_subdirs(directory, fullpath=False):
@@ -126,7 +126,7 @@ def get_first_colored(frames):
         if not is_grayscale(frame):
             return frame
 
-    print("NO COLORED FRAMES FOUND")
+    print("FRAME PROCESSING: NO COLORED FRAMES FOUND FOR A FILE")
     return errorNoColor
 
 # plt.imshow(get_first_colored(avi_to_imgseq("C:\\Users\\allen\\Documents\\Garibaldi ITEX\\Garibaldi_phenocams_Sept_2022\\Plot_photos\\CASS_Plot_photos_Aug9_2022\\CASS_9C\\100MEDIA\\DSCF0010.AVI")))
@@ -145,6 +145,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
     is specified.
 
     Encodes date metadata since first image i.e. day 1, day 2 etc.
+    DEPRECATED FEATURE - now done in built_metadata.
 
     Parameters:
         camera_folder (path str) : folder path for a camera
@@ -201,8 +202,8 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         print("Output folder {cname} already exists, using this.".format(cname=camera_name))
 
     for index, frame in enumerate(results):
-        skvideo.io.vwrite(newpath + "/{cname}_day{day}.jpg".
-                          format(cname=camera_name, day=(index + date_offset)), frame)
+        skvideo.io.vwrite(newpath + "/{cname}_[{num:03d}].jpg".
+                          format(cname=camera_name, num=(index + date_offset)), frame)
 
 
 '''
@@ -233,9 +234,12 @@ if __name__ == "__main__":
     p = mp.Pool(process_count)
     print("started")
     for camera in worklist:
-        print(camera)
-        if os.path.basename(camera) in problematics.keys():
-            process_camera(
-                camera, date_offset=problematics[os.path.basename(camera)])
-        else:
-            process_camera(camera)
+        try:
+            if os.path.basename(camera) in problematics.keys():
+                process_camera(
+                    camera, date_offset=problematics[os.path.basename(camera)])
+            else:
+                process_camera(camera)
+        except:
+            print("something went wrong with {cam}".format(cam=os.path.abspath(camera)))
+    print("finished.")
