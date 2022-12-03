@@ -4,20 +4,13 @@ import os
 import numpy as np
 import multiprocess as mp
 from matplotlib import pyplot as plt
+import dirtools
 
 # only get the first 9 frames
 
 keep_frame_num = 9
 
-
-def get_parent_dir(directory, depth=1):
-    path = directory
-    for i in range(0, depth):
-        path = os.path.dirname(path)
-    return path
-
-
-project_home = get_parent_dir(os.getcwd(), depth=2)
+project_home = dirtools.get_parent_dir(os.getcwd(), depth=2)
 os.chdir(project_home)
 workingdir = os.getcwd()
 camera_dir = workingdir + "/Garibaldi_phenocams_Sept_2022/"
@@ -26,27 +19,6 @@ errorNoColor = np.zeros((300, 300, 3))
 errorNoColor[:, :, 0] = 255
 
 problematics = {}  # date offsets
-
-
-def get_subdirs(directory, fullpath=False):
-    '''
-    Gets the folder in a folder. Not recursive.
-    Only returns folder names by default.
-
-    Parameters
-        directory (path str) : The parent folder to get the children of
-                               fullpath (bool).
-
-        fullpath (bool) : Whether or not to return full folder paths.
-                          Default value: False
-    '''
-    if fullpath:
-        return [os.path.join(directory, dI).replace("\\", "/")
-                for dI in os.listdir(directory)
-                if os.path.isdir(os.path.join(directory, dI))]
-    else:
-        return [dI.replace("\\", "/") for dI in os.listdir(directory)
-                if os.path.isdir(os.path.join(directory, dI))]
 
 
 def avi_to_imgseq(avi, numframes=keep_frame_num):
@@ -223,10 +195,10 @@ if __name__ == "__main__":
     print("working in {dir}".format(dir=project_home))
     print("target directory: {dir}".format(dir=output_dir))
     print("cameras folders found: {cams}\n ({num} total)"
-          .format(cams=get_subdirs(camera_dir), num=len(get_subdirs(camera_dir))))
+          .format(cams=dirtools.get_subdirs(camera_dir), num=len(dirtools.get_subdirs(camera_dir))))
 
     print("generating worklist to process...")
-    worklist = get_subdirs(camera_dir, fullpath=True)
+    worklist = dirtools.get_subdirs(camera_dir, fullpath=True)
     # print(worklist)
 
     process_count = mp.cpu_count()
