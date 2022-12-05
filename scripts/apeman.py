@@ -122,7 +122,11 @@ class Image:
 
         # plt.imshow(get_date_region())
         # plt.show()
-        blur = cv2.GaussianBlur(date_region, (3, 3), 0)
+        img = cv2.resize(date_region, None, fx=1.2, fy=1.2, interpolation=cv2.INTER_CUBIC)
+        kernel = np.ones((1, 1), np.uint8)
+        img = cv2.dilate(img, kernel, iterations=1)
+        img = cv2.erode(img, kernel, iterations=1)
+        blur = cv2.threshold(cv2.medianBlur(img, 3), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
         date_str = pytesseract.image_to_string(
             blur, lang='eng', config='--psm 8')
         date_str = date_str.replace("/", "-").strip()
