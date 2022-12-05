@@ -143,13 +143,12 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
     generate worklist of files to process, resorting stuff to
     account for some cameras bugging out and restarting their counts.
     '''
-    files = [f for f in os.listdir(
-        source) if os.path.isfile(os.path.join(source, f))]
+    files = dirtools.get_files(source)
     sort_template = map((lambda f: ("zzzzz" + f) if "(" in f else f), files)
     files_sorted = [s for _, s in sorted(
         zip(sort_template, files), key=lambda pair: pair[0])]
 
-    video_worklist = [os.path.join(source, f) for f in files_sorted]
+    video_worklist = dirtools.get_files(source, fullpath=True)
     # print("video worklist: {v}".format(v=video_worklist))
 
     print("processing {cname} ({num} files)".format(
@@ -162,16 +161,17 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         '''
         return get_first_colored(avi_to_imgseq(path, numframes))
 
-
     results = p.map(func_wrapper, video_worklist)
 
     newpath = output + "/" + camera_name
 
     if not os.path.exists(newpath):
         os.makedirs(newpath)
-        print("Created output folder for camera {cname}".format(cname=camera_name))
+        print("Created output folder for camera {cname}".format(
+            cname=camera_name))
     else:
-        print("Output folder {cname} already exists, using this.".format(cname=camera_name))
+        print("Output folder {cname} already exists, using this.".format(
+            cname=camera_name))
 
     for index, frame in enumerate(results):
         skvideo.io.vwrite(newpath + "/{cname}_[{num:03d}].jpg".
@@ -213,5 +213,6 @@ if __name__ == "__main__":
             else:
                 process_camera(camera)
         except:
-            print("something went wrong with {cam}".format(cam=os.path.abspath(camera)))
+            print("something went wrong with {cam}".format(
+                cam=os.path.abspath(camera)))
     print("finished.")
