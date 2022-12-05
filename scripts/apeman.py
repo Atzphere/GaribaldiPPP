@@ -26,7 +26,6 @@ import cv2
 import dirtools
 import os
 import pytesseract
-import multiprocess as mp
 
 # pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
@@ -126,7 +125,7 @@ class Image:
         kernel = np.ones((1, 1), np.uint8)
         img = cv2.dilate(img, kernel, iterations=1)
         img = cv2.erode(img, kernel, iterations=1)
-        blur = cv2.threshold(cv2.medianBlur(img, 3), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        blur = cv2.threshold(cv2.bilateralFilter(img, 5, 75, 75), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
         date_str = pytesseract.image_to_string(
             blur, lang='eng', config='--psm 8')
         date_str = date_str.replace("/", "-").strip()
@@ -201,7 +200,6 @@ class Camera:
             return img
 
         image_dirs = dirtools.get_files(self.folder_path, fullpath=True)
-        p = mp.Pool(mp.cpu_count())
         self.images = map(process_image, image_dirs)
         return self.images
 
