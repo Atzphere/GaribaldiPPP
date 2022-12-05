@@ -30,7 +30,7 @@ import multiprocess as mp
 
 # pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
-# tessdata_dir_config = r'--tessdata-dir ".\\eng.traineddata"'
+
 # project_home = dirtools.get_parent_dir(os.getcwd(), depth=2)
 # os.chdir(project_home)
 
@@ -124,7 +124,7 @@ class Image:
         # plt.show()
         blur = cv2.GaussianBlur(date_region, (3, 3), 0)
         date_str = pytesseract.image_to_string(
-            blur, lang='eng', config=tessdata_dir_config+'--psm 8')
+            blur, lang='eng', config='--psm 8')
         date_str = date_str.replace("/", "-").strip()
         try:
             return dt.date.fromisoformat(date_str)
@@ -153,7 +153,7 @@ class Image:
         # blur = cv2.GaussianBlur(temp_region, (3,3), 0)
         blur = temp_region
         temp_str = pytesseract.image_to_string(
-            blur, lang='eng', config=tessdata_dir_config+'--psm 6 -c tessedit_char_whitelist=0123456789')
+            blur, lang='eng', config='--psm 6 -c tessedit_char_whitelist=0123456789')
         try:
             return int(temp_str.strip())
         except:
