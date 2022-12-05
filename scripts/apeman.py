@@ -125,7 +125,7 @@ class Image:
         kernel = np.ones((1, 1), np.uint8)
         img = cv2.dilate(img, kernel, iterations=1)
         img = cv2.erode(img, kernel, iterations=1)
-        blur = cv2.threshold(cv2.bilateralFilter(img, 5, 75, 75), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        blur = cv2.GaussianBlur(img, (3, 3), 0)
         date_str = pytesseract.image_to_string(
             blur, lang='eng', config='--psm 8')
         date_str = date_str.replace("/", "-").strip()
