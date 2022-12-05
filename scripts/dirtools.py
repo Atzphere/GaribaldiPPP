@@ -8,7 +8,7 @@ Functions:
 
     get_subdirs(directory, fullpath)
     gets a list of child folder names by default in (directory)
-    Or their entire paths if (fullpath=True) -> list(str) or list(os.path)  
+    Or their entire paths if (fullpath=True) -> list(str) or list(os.path)
 
 '''
 import os

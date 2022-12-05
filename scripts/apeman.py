@@ -9,7 +9,7 @@ ONLY metadata.
 Not completely done yet but the planned
 main gist of it goes like the following:
 
-Camera class: contains an entire camera's worth of Image data from one field season
+Camera class: contains an entire camera's worth of Image data from one season
 
 Image class: wrapper for every individual image to store metadata.
 
@@ -21,14 +21,12 @@ Classes:
 '''
 
 import numpy as np
-import datetime as dt
+import _datetime as dt
 import cv2
 import dirtools
 import os
 import pytesseract
 import multiprocess as mp
-
-from matplotlib import pyplot as plt
 
 # pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
@@ -199,7 +197,7 @@ class Camera:
 
         image_dirs = dirtools.get_files(self.folder_path, fullpath=True)
         p = mp.Pool(mp.cpu_count())
-        self.images = p.map(process_image, image_dirs)
+        self.images = map(process_image, image_dirs)
         return self.images
 
 
@@ -207,6 +205,7 @@ class Camera:
 
 
 if __name__ == "__main__":  # testing stuff for OCR accuracy
+    from matplotlib import pyplot as plt
     '''
     source = "C:\\Users\\allen\\Documents\\Garibaldi ITEX\\testing\\"
     files = dirtools.get_files(source, fullpath=True)
@@ -224,7 +223,9 @@ if __name__ == "__main__":  # testing stuff for OCR accuracy
             failures += 1
     print("total failure rate: {}%".format((100 * failures / len(files))))
     '''
-    foo = Camera("C:\\Users\\allen\\Documents\\Garibaldi ITEX\\testing\\")
+    foo = Camera("/home/azhao/projects/def-henryg/Garibaldi_Lake_data_summer2022/azhao_pheno_processing_workingdir/export/MEAD_20W")
     foo.build_camera_database()
     for i in foo.images:
         print(i.metadata["get_date_created"])
+        #plt.imshow(i.loaded_image)
+        #plt.show()
