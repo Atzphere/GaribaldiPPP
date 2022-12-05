@@ -28,9 +28,9 @@ import os
 import pytesseract
 import multiprocess as mp
 
-# pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
-
-tessdata_dir_config = r'--tessdata-dir ".\\eng.traineddata"'
+pytesseract.pytesseract.tesseract_cmd = r"/cvmfs/soft.computecanada.ca/easybuild/software/2020/avx2/Core/tesseract/5.0.1/bin/tesseract"
+tessdata_dir_config = ""
+#tessdata_dir_config = r'--tessdata-dir ".\\eng.traineddata"'
 project_home = dirtools.get_parent_dir(os.getcwd(), depth=2)
 os.chdir(project_home)
 
