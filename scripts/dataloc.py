@@ -2,7 +2,7 @@
 Convenient way to change data directories for all scripts globally
 intead of going into each one and changing a directory constant.
 '''
-reference = open("FILEPATHS.txt", "r")
+reference = open("../FILEPATHS.txt", "r")
 lines = f.readlines()
 
 videos = lines[0]
