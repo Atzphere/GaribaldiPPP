@@ -1,7 +1,12 @@
+'''
+Convenient way to change data directories for all scripts globally
+intead of going into each one and changing a directory constant.
+'''
 reference = open("FILEPATHS.txt", "r")
 lines = f.readlines()
 
-cameras = lines[0]
+videos = lines[0]
 export = lines[1]
-invalids = lines[2]
-dupes = lines[3]
+cameras = lines[2]
+invalids = lines[3]
+dupes = lines[4]
