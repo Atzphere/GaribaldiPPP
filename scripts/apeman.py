@@ -4,7 +4,8 @@ I've tried to wrap all the associated information in as neat of a thing
 as possible using classes.
 
 This module is NOT for specific image content stuff like greenness index,
-ONLY metadata.
+ONLY metadata. You can use the Camera method map_to_images to get that stuff
+with ease though.
 
 Not completely done yet but the planned
 main gist of it goes like the following:
@@ -26,6 +27,7 @@ import cv2
 import dirtools
 import os
 import pytesseract
+import multiprocess
 
 # pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
@@ -94,7 +96,7 @@ class Image:
         self.image_loaded = False
         self.is_error_image = False
         self.metadata_executables = {"date": self.get_date_created,
-                            "temperature" : self.get_temperature}
+                                     "temperature": self.get_temperature}
 
     def load_image(self):
         if not self.image_loaded:
@@ -121,7 +123,8 @@ class Image:
 
         # plt.imshow(get_date_region())
         # plt.show()
-        img = cv2.resize(date_region, None, fx=1.2, fy=1.2, interpolation=cv2.INTER_CUBIC)
+        img = cv2.resize(date_region, None, fx=1.2, fy=1.2,
+                         interpolation=cv2.INTER_CUBIC)
         kernel = np.ones((1, 1), np.uint8)
         img = cv2.dilate(img, kernel, iterations=1)
         img = cv2.erode(img, kernel, iterations=1)
@@ -165,6 +168,13 @@ class Image:
             print(temp_str)
             return self.errorTempOCRFailed
 
+    def exec_function(self, func):
+        '''
+        Exposes the Image object's image to run an arbitrary function on.
+
+        '''
+        self.load_image()
+        return func(self.loaded_image)
 
 
 class Camera:
@@ -175,15 +185,20 @@ class Camera:
 
     Attributes
     ----------
+    name : str
+        Name attributed to the camera
     folder_path : os.path (str)
         file path of the camera's image library (AFTER AVI EXTRACTION)
-
+    images : list(os.path (str))
+        list of image filepaths corresponding to this camera.
 
     '''
 
-    def __init__(self, folder_path, images=[]):
+    def __init__(self, name, folder_path, images=[], metadata={}):
+        self.name = name
         self.folder_path = folder_path
         self.images = images
+
 
     def build_camera_database(self, extract=["get_date_created"]):
         '''
@@ -203,8 +218,19 @@ class Camera:
         self.images = map(process_image, image_dirs)
         return self.images
 
-
-
+    def map_to_images(self, func, multiprocess=False, cpus="all"):
+        '''
+        Maps an arbitrary function to the camera's associated Images.
+        Option to run in a multithreaded manner.
+        '''
+        if multiprocess and __name__ == "__main__":
+            if cpus == "all":
+                p = mp.Pool(mp.cpu_count())
+            else:
+                p = mp.Pool(cpus)
+            return p.map(func, self.images)
+        elif not multiprocess:
+            return map(func, self.images)
 
 
 if __name__ == "__main__":  # testing stuff for OCR accuracy
@@ -226,9 +252,10 @@ if __name__ == "__main__":  # testing stuff for OCR accuracy
             failures += 1
     print("total failure rate: {}%".format((100 * failures / len(files))))
     '''
-    foo = Camera("/home/azhao/projects/def-henryg/Garibaldi_Lake_data_summer2022/azhao_pheno_processing_workingdir/export/MEAD_20W")
+    foo = Camera(
+        "/home/azhao/projects/def-henryg/Garibaldi_Lake_data_summer2022/azhao_pheno_processing_workingdir/export/MEAD_20W")
     foo.build_camera_database()
     for i in foo.images:
         print(i.metadata["get_date_created"])
-        #plt.imshow(i.loaded_image)
-        #plt.show()
+        # plt.imshow(i.loaded_image)
+        # plt.show()
