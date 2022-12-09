@@ -194,4 +194,5 @@ if __name__ == "__main__":
             output, delimiter=',', quoting=csv.QUOTE_NONE)
         for entry in masterentries:
             output_writer.writerow(entry.return_csv_line())
+    p.close()
     print("done")
