@@ -5,6 +5,7 @@ import numpy as np
 import multiprocess as mp
 from matplotlib import pyplot as plt
 import dirtools
+import dataloc
 
 # only get the first 9 frames
 
@@ -13,8 +14,8 @@ keep_frame_num = 9
 project_home = dirtools.get_parent_dir(os.getcwd(), depth=2)
 os.chdir(project_home)
 workingdir = os.getcwd()
-camera_dir = workingdir + "/Garibaldi_phenocams_Sept_2022/"
-output_dir = workingdir + "/export/"
+camera_dir = dataloc.videos
+output_dir = dataloc.export
 errorNoColor = np.zeros((300, 300, 3))
 errorNoColor[:, :, 0] = 255
 

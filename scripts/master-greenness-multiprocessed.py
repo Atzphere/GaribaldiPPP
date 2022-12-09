@@ -22,6 +22,7 @@ import dirtools
 from PIL import Image
 import csv
 import multiprocess as mp
+import dataloc
 
 '''
 REQUIREMENTS
@@ -34,9 +35,9 @@ DUPES folder containing copies of duplicate images
 
 OUTPUT_FILE_NAME = "2022.csv"
 
-CAMERA_DIRECTORY = "./greeness-data"
-INVALIDS_DIRECTORY = "./INVALIDS"
-DUPES_DIRECTORY = "./DUPES"
+CAMERA_DIRECTORY = dataloc.cameras
+INVALIDS_DIRECTORY = dataloc.invalids
+DUPES_DIRECTORY = dataloc.dupes
 
 # this is here because I haven't gotten OCR working yet to grab dates
 # the script counts up from these starts dates for every valid image.

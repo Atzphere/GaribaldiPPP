@@ -12,6 +12,7 @@ import _datetime as dt
 import dirtools
 from PIL import Image
 import itertools
+import dataloc
 
 
 CASS_START = dt.date.fromisoformat("2022-07-21")
@@ -20,13 +21,13 @@ MEAD_START = dt.date.fromisoformat("2022-08-06")
 
 nan = np.nan
 
-cameras = dirtools.get_subdirs("./greeness-data", fullpath=True)
-cameranames = dirtools.get_subdirs("./greeness-data")
-INVALIDS = dirtools.get_files("./INVALIDS")
-DUPES = dirtools.get_files("./DUPES")
+cameras = dirtools.get_subdirs(dataloc.cameras, fullpath=True)
+cameranames = dirtools.get_subdirs(dataloc.cameras)
+INVALIDS = dirtools.get_files(dataloc.invalids)
+DUPES = dirtools.get_files(dataloc.dupes)
 
-INVALIDS_WL = dirtools.get_files("./INVALIDS", fullpath=True)
-DUPES_WL = dirtools.get_files("./DUPES", fullpath=True)
+INVALIDS_WL = dirtools.get_files(dataloc.invalids, fullpath=True)
+DUPES_WL = dirtools.get_files(dataloc.dupes, fullpath=True)
 
 
 def get_image_num(imgname, camname):
