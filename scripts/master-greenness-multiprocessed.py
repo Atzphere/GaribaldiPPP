@@ -34,7 +34,7 @@ DUPES folder containing copies of duplicate images
 
 # CONFIGURABLES:
 
-OUTPUT_FILE_NAME = "2022_GCC_whole.csv"
+OUTPUT_FILE_NAME = "2022_OLDMETHOD_whole.csv"
 
 CAMERA_DIRECTORY = dataloc.cameras
 INVALIDS_DIRECTORY = dataloc.invalids
@@ -239,16 +239,16 @@ def process_camera(zipped):
                     entries.append(
                         Entry(site, plot, treatment, img, date,
                               get_greenness_quadrants(img_data,
-                                                      GCC,
+                                                      poster_method_pixelCount,
                                                       "RGB",
-                                                      )))
+                                                      params=(80, 90))))
                 else:
                     entries.append(
                         Entry(site, plot, treatment, img, date,
                               get_greenness(img_data,
-                                            GCC,
+                                            poster_method_pixelCount,
                                             "RGB",
-                                            )))
+                                            params=(80, 90))))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
