@@ -40,6 +40,8 @@ CAMERA_DIRECTORY = dataloc.cameras
 INVALIDS_DIRECTORY = dataloc.invalids
 DUPES_DIRECTORY = dataloc.dupes
 
+do_quadrants = False
+
 # this is here because I haven't gotten OCR working yet to grab dates
 # the script counts up from these starts dates for every valid image.
 CASS_START = dt.date.fromisoformat("2022-07-21")
@@ -163,7 +165,7 @@ def get_greenness(img, extractor: Callable, itype=None, params=()):
 
     im = np.array((img).convert(itype))
 
-    return tuple(extractor(im, *params))
+    return extractor(im, *params)
 
 
 def get_plot_num(imgname):
@@ -227,12 +229,20 @@ def process_camera(zipped):
                 processed_already.append(imgname)
             else:
                 img_data = Image.open(img)
-                entries.append(
-                    Entry(site, plot, treatment, img, date,
-                          get_greenness(img_data, # can toggle btwn all & quad
-                                                  TWOG_RBi,
-                                                  "RGB",
-                                                  )))
+                if do_quadrants:
+                    entries.append(
+                        Entry(site, plot, treatment, img, date,
+                              get_greenness_quadrants(img_data,
+                                                      TWOG_RBi,
+                                                      "RGB",
+                                                      )))
+                else:
+                    entries.append(
+                        Entry(site, plot, treatment, img, date,
+                              get_greenness(img_data,
+                                                      TWOG_RBi,
+                                                      "RGB",
+                                                      )))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
