@@ -246,7 +246,7 @@ def process_camera(zipped):
                     entries.append(
                         Entry(site, plot, treatment, img, date,
                               get_greenness(img_data,
-                                            TWOG_RBi,
+                                            GCC,
                                             "RGB",
                                             )))
                 date += dt.timedelta(days=1)
