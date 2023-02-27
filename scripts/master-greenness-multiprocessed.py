@@ -34,7 +34,7 @@ DUPES folder containing copies of duplicate images
 
 # CONFIGURABLES:
 
-OUTPUT_FILE_NAME = "2022.csv"
+OUTPUT_FILE_NAME = "2022_v2.csv"
 
 CAMERA_DIRECTORY = dataloc.cameras
 INVALIDS_DIRECTORY = dataloc.invalids
@@ -162,7 +162,7 @@ def process_camera(zipped):
     image_wl.extend([i for i in INVALIDS_WL if name in i])
     image_wl.extend([i for i in DUPES_WL if name in i])
 
-    image_nums = [get_image_num(i, name) for i in image_names]
+    image_nums = [get_image_num(i, name) for i in image_names if "[" not in i]
     image_names = [x for _, x in sorted(zip(image_nums, image_names))]
     image_wl = [x for _, x in sorted(zip(image_nums, image_wl))]
 
