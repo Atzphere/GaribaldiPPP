@@ -90,7 +90,7 @@ def get_image_num(imgname, camname):
 
 
 def poster_method_pixelCount(img, minvalue, maxvalue):
-    Hue = img.convert('RGB')[:, :, 0]
+    Hue = Image.fromarray(img).convert('HSV')[:, :, 0]
     # Make mask of zeroes in which we will set greens to 1
     mask = np.zeros_like(Hue, dtype=np.uint8)
 
