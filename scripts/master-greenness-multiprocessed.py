@@ -99,7 +99,7 @@ def poster_method_pixelCount(img, minvalue, maxvalue):
     return mask.mean() * 100
 
 
-def get_greenness_quadrants(img, extractor: Callable, itype: str, params=()):
+def get_greenness_quadrants(img, extractor: Callable, itype=None, params=()):
     '''
     Extracts greenness from an image using a given method.
 
@@ -117,7 +117,7 @@ def get_greenness_quadrants(img, extractor: Callable, itype: str, params=()):
         Parameters to be passed to the extractor i.e. threshold values.
     '''
 
-    im = np.array(img.convert(itype))
+    im = np.array(img)#.convert(itype))
     M = im.shape[0] // 2
     N = im.shape[1] // 2
     quadrants = [im[x:x + M, y:y + N]
@@ -198,7 +198,8 @@ def process_camera(zipped):
                     Entry(site, plot, treatment, img, date,
                           get_greenness_quadrants(img_data,
                                                   poster_method_pixelCount,
-                                                  "HSV", (80, 90))))
+                                                  #"HSV", 
+                                                  (80, 90))))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
