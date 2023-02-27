@@ -163,7 +163,7 @@ def get_greenness(img, extractor: Callable, itype=None, params=()):
 
     im = np.array((img).convert(itype))
 
-    return extractor(im, *params)
+    return tuple(extractor(im, *params))
 
 
 def get_plot_num(imgname):
