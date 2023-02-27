@@ -81,11 +81,14 @@ class Entry:
         self.filename = filename
         self.date = date
         self.greenness_quadrants = greenness_quadrants
-        print("succeeds")
 
     def return_csv_line(self):
-        return (self.site, self.plot, self.treatment,
+        try:
+            return (self.site, self.plot, self.treatment,
                 self.filename, self.date, *self.greenness_quadrants)
+        except TypeError:
+            return (self.site, self.plot, self.treatment,
+                            self.filename, self.date, self.greenness_quadrants)
 
 
 def get_image_num(imgname, camname):
