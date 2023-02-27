@@ -81,6 +81,7 @@ class Entry:
         self.filename = filename
         self.date = date
         self.greenness_quadrants = greenness_quadrants
+        print("succeeds")
 
     def return_csv_line(self):
         return (self.site, self.plot, self.treatment,
@@ -102,12 +103,14 @@ def poster_method_pixelCount(img, minvalue, maxvalue):
 
 
 def GCC(img):
-    red, green, blue = np.mean(img[:, :, 0]), np.mean(img[:, :, 1]), np.mean(img[:, :, 2])
+    red, green, blue = np.mean(img[:, :, 0]), np.mean(
+        img[:, :, 1]), np.mean(img[:, :, 2])
     return (green / (red + green + blue))
 
 
 def TWOG_RBi(img):
-    red, green, blue = np.mean(img[:, :, 0]), np.mean(img[:, :, 1]), np.mean(img[:, :, 2])
+    red, green, blue = np.mean(img[:, :, 0]), np.mean(
+        img[:, :, 1]), np.mean(img[:, :, 2])
     return (2 * green) - (red + blue)
 
 
@@ -239,10 +242,10 @@ def process_camera(zipped):
                 else:
                     entries.append(
                         Entry(site, plot, treatment, img, date,
-                              tuple(get_greenness(img_data,
-                                                      TWOG_RBi,
-                                                      "RGB",
-                                                      ))))
+                              get_greenness(img_data,
+                                            TWOG_RBi,
+                                            "RGB",
+                                            )))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
