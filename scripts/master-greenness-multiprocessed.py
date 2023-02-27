@@ -239,10 +239,10 @@ def process_camera(zipped):
                 else:
                     entries.append(
                         Entry(site, plot, treatment, img, date,
-                              get_greenness(img_data,
+                              tuple(get_greenness(img_data,
                                                       TWOG_RBi,
                                                       "RGB",
-                                                      )))
+                                                      ))))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
