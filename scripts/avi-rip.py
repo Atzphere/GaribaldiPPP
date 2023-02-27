@@ -216,4 +216,6 @@ if __name__ == "__main__":
         except:
             print("something went wrong with {cam}".format(
                 cam=os.path.abspath(camera)))
+    p.close()
+    p.join()
     print("finished.")

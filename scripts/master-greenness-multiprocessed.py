@@ -23,6 +23,7 @@ from PIL import Image
 import csv
 import multiprocess as mp
 import dataloc
+from collections.abc import Callable
 
 '''
 REQUIREMENTS
@@ -52,7 +53,7 @@ COMMUNITY_SETTINGS = {"CASS": ("CASS", CASS_START),
                       "MEAD": ("MEAD", MEAD_START),
                       "SAL": ("SAL", SAL_START)}
 
-# no touchy from here and below unless you wanna code
+# Main code below
 
 nan = np.nan
 
@@ -88,9 +89,31 @@ def get_image_num(imgname, camname):
     return int(imgname.replace(camname + "_day", "").replace(".jpg", ""))
 
 
-def get_greenness_quadrants(img):
-    minvalue = int(80)
-    maxvalue = int(90)
+def poster_method_pixelCount(img, minvalue, maxvalue):
+    Hue = img.convert('RGB')[:, :, 0]
+    # Make mask of zeroes in which we will set greens to 1
+    mask = np.zeros_like(Hue, dtype=np.uint8)
+
+    # Set all green pixels to 1
+    mask[(Hue >= minvalue) & (Hue <= maxvalue)] = 1
+    return mask.mean() * 100
+
+
+def get_greenness_quadrants(img, extractor: Callable, params=()):
+    '''
+    Extracts greenness from an image using a given method.
+
+    Arguments:
+        img : np.array Image
+        the image to be analyzed
+
+        extractor : Callable[Image -> Float]
+        the function used to evaluate greenness/any other index on quadrants.
+
+        params : Tuple
+        Parameters to be passed to the extractor i.e. threshold values.
+    '''
+
     im = np.array(img)
     M = im.shape[0] // 2
     N = im.shape[1] // 2
@@ -101,13 +124,7 @@ def get_greenness_quadrants(img):
     quad_greenness = []
 
     for quadrant in quadrants:
-        Hue = quadrant[:, :, 0]
-        # Make mask of zeroes in which we will set greens to 1
-        mask = np.zeros_like(Hue, dtype=np.uint8)
-
-        # Set all green pixels to 1
-        mask[(Hue >= minvalue) & (Hue <= maxvalue)] = 1
-        quad_greenness.append(mask.mean() * 100)
+        quad_greenness.append(extractor(quadrant, *params))
 
     # Now print percentage of green pixels
     return tuple(quad_greenness)
@@ -173,9 +190,10 @@ def process_camera(zipped):
                 pass
                 processed_already.append(imgname)
             else:
-                img_data = Image.open(img).convert('HSV')
+                img_data = Image.open(img).convert('RGB')
                 entries.append(Entry(site, plot, treatment, img, date,
-                                     get_greenness_quadrants(img_data)))
+                                     get_greenness_quadrants(img_data,
+                                                             poster_method_pixelCount, (80, 90))))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
@@ -183,7 +201,10 @@ def process_camera(zipped):
 
 if __name__ == "__main__":
     masterentries = []
+    print("GREENNESS: initializing multiprocessing pool (using {} cores)"
+          .format(mp.cpu_count()))
     p = mp.Pool(mp.cpu_count())
+    print("{} worker processes started".format(mp.cpu_count()))
     data = zip(cameras, cameranames)
     results = p.map(process_camera, data)
     for result in results:
@@ -195,4 +216,5 @@ if __name__ == "__main__":
         for entry in masterentries:
             output_writer.writerow(entry.return_csv_line())
     p.close()
+    p.join()
     print("done")
