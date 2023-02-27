@@ -34,7 +34,7 @@ DUPES folder containing copies of duplicate images
 
 # CONFIGURABLES:
 
-OUTPUT_FILE_NAME = "2022_GCC.csv"
+OUTPUT_FILE_NAME = "2022_2G-RBI_whole.csv"
 
 CAMERA_DIRECTORY = dataloc.cameras
 INVALIDS_DIRECTORY = dataloc.invalids
@@ -143,6 +143,29 @@ def get_greenness_quadrants(img, extractor: Callable, itype=None, params=()):
     return tuple(quad_greenness)
 
 
+def get_greenness(img, extractor: Callable, itype=None, params=()):
+    '''
+    Extracts greenness from an image using a given method.
+
+    Arguments:
+        img : np.array Image
+        the image to be analyzed
+
+        extractor : Callable[Image -> Float]
+        the function used to evaluate greenness/any other index on entire img
+
+        itype : String (colorspace)
+        the colorspace to convert the image to e.g. RGB, HSV...
+
+        params : Tuple
+        Parameters to be passed to the extractor i.e. threshold values.
+    '''
+
+    im = np.array((img).convert(itype))
+
+    return extractor(im, *params)
+
+
 def get_plot_num(imgname):
     no_daynum = imgname.split("_day", 1)[0]
     pnum = ''.join(c for c in no_daynum if c.isdigit())
@@ -206,7 +229,7 @@ def process_camera(zipped):
                 img_data = Image.open(img)
                 entries.append(
                     Entry(site, plot, treatment, img, date,
-                          get_greenness_quadrants(img_data,
+                          get_greenness(img_data, # can toggle btwn all & quad
                                                   TWOG_RBi,
                                                   "RGB",
                                                   )))
