@@ -157,7 +157,7 @@ def process_camera(zipped):
     camera, name = zipped
     entries = []
     processed_already = []
-    image_names = dirtools.get_files(camera)
+    image_names = [i for i in dirtools.get_files(camera) if "[" not in i]
     image_names.extend([i for i in INVALIDS if name in i])
     image_names.extend([i for i in DUPES if name in i])
 
@@ -194,10 +194,11 @@ def process_camera(zipped):
                 processed_already.append(imgname)
             else:
                 img_data = Image.open(img)
-                entries.append(Entry(site, plot, treatment, img, date,
-                                     get_greenness_quadrants(img_data,
-                                                             poster_method_pixelCount,
-                                                             "HSV", (80, 90))))
+                entries.append(
+                    Entry(site, plot, treatment, img, date,
+                          get_greenness_quadrants(img_data,
+                                                  poster_method_pixelCount,
+                                                  "HSV", (80, 90))))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
