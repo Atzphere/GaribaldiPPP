@@ -34,7 +34,7 @@ DUPES folder containing copies of duplicate images
 
 # CONFIGURABLES:
 
-OUTPUT_FILE_NAME = "2022_v2.csv"
+OUTPUT_FILE_NAME = "2022_v2_oldmethod.csv"
 
 CAMERA_DIRECTORY = dataloc.cameras
 INVALIDS_DIRECTORY = dataloc.invalids
@@ -193,7 +193,7 @@ def process_camera(zipped):
                 pass
                 processed_already.append(imgname)
             else:
-                img_data = Image.open(img)
+                img_data = Image.open(img).convert("HSV")
                 entries.append(
                     Entry(site, plot, treatment, img, date,
                           get_greenness_quadrants(img_data,
