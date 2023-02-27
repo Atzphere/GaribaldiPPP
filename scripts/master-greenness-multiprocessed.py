@@ -90,7 +90,7 @@ def get_image_num(imgname, camname):
 
 
 def poster_method_pixelCount(img, minvalue, maxvalue):
-    Hue = Image.fromarray(img).convert('HSV')[:, :, 0]
+    Hue = img[:, :, 0]
     # Make mask of zeroes in which we will set greens to 1
     mask = np.zeros_like(Hue, dtype=np.uint8)
 
@@ -99,7 +99,7 @@ def poster_method_pixelCount(img, minvalue, maxvalue):
     return mask.mean() * 100
 
 
-def get_greenness_quadrants(img, extractor: Callable, params=()):
+def get_greenness_quadrants(img, extractor: Callable, itype: str, params=()):
     '''
     Extracts greenness from an image using a given method.
 
@@ -110,11 +110,14 @@ def get_greenness_quadrants(img, extractor: Callable, params=()):
         extractor : Callable[Image -> Float]
         the function used to evaluate greenness/any other index on quadrants.
 
+        itype : String (colorspace)
+        the colorspace to convert the image to e.g. RGB, HSV...
+
         params : Tuple
         Parameters to be passed to the extractor i.e. threshold values.
     '''
 
-    im = np.array(img)
+    im = np.array(img.convert(itype))
     M = im.shape[0] // 2
     N = im.shape[1] // 2
     quadrants = [im[x:x + M, y:y + N]
@@ -190,10 +193,11 @@ def process_camera(zipped):
                 pass
                 processed_already.append(imgname)
             else:
-                img_data = Image.open(img).convert('RGB')
+                img_data = Image.open(img)
                 entries.append(Entry(site, plot, treatment, img, date,
                                      get_greenness_quadrants(img_data,
-                                                             poster_method_pixelCount, (80, 90))))
+                                                             poster_method_pixelCount,
+                                                             "HSV", (80, 90))))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
