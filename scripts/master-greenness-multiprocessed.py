@@ -34,7 +34,7 @@ DUPES folder containing copies of duplicate images
 
 # CONFIGURABLES:
 
-OUTPUT_FILE_NAME = "2022_2G-RBI_whole.csv"
+OUTPUT_FILE_NAME = "2022_GCC_whole.csv"
 
 CAMERA_DIRECTORY = dataloc.cameras
 INVALIDS_DIRECTORY = dataloc.invalids
@@ -85,10 +85,10 @@ class Entry:
     def return_csv_line(self):
         try:
             return (self.site, self.plot, self.treatment,
-                self.filename, self.date, *self.greenness_quadrants)
+                    self.filename, self.date, *self.greenness_quadrants)
         except TypeError:
             return (self.site, self.plot, self.treatment,
-                            self.filename, self.date, self.greenness_quadrants)
+                    self.filename, self.date, self.greenness_quadrants)
 
 
 def get_image_num(imgname, camname):
@@ -239,7 +239,7 @@ def process_camera(zipped):
                     entries.append(
                         Entry(site, plot, treatment, img, date,
                               get_greenness_quadrants(img_data,
-                                                      TWOG_RBi,
+                                                      GCC,
                                                       "RGB",
                                                       )))
                 else:
