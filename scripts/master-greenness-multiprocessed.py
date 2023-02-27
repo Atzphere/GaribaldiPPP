@@ -34,7 +34,7 @@ DUPES folder containing copies of duplicate images
 
 # CONFIGURABLES:
 
-OUTPUT_FILE_NAME = "2022_oldmethod.csv"
+OUTPUT_FILE_NAME = "2022_GCC.csv"
 
 CAMERA_DIRECTORY = dataloc.cameras
 INVALIDS_DIRECTORY = dataloc.invalids
@@ -99,6 +99,16 @@ def poster_method_pixelCount(img, minvalue, maxvalue):
     return mask.mean() * 100
 
 
+def GCC(img):
+    red, green, blue = np.mean(img[:, :, 0]), np.mean(img[:, :, 1]), np.mean(img[:, :, 2])
+    return (green / (red + green + blue))
+
+
+def TWOG_RBi(img):
+    red, green, blue = np.mean(img[:, :, 0]), np.mean(img[:, :, 1]), np.mean(img[:, :, 2])
+    return (2 * green) - (red + blue)
+
+
 def get_greenness_quadrants(img, extractor: Callable, itype=None, params=()):
     '''
     Extracts greenness from an image using a given method.
@@ -117,7 +127,7 @@ def get_greenness_quadrants(img, extractor: Callable, itype=None, params=()):
         Parameters to be passed to the extractor i.e. threshold values.
     '''
 
-    im = np.array(img)#.convert(itype))
+    im = np.array((img).convert(itype))
     M = im.shape[0] // 2
     N = im.shape[1] // 2
     quadrants = [im[x:x + M, y:y + N]
@@ -193,13 +203,13 @@ def process_camera(zipped):
                 pass
                 processed_already.append(imgname)
             else:
-                img_data = Image.open(img).convert("HSV")
+                img_data = Image.open(img)
                 entries.append(
                     Entry(site, plot, treatment, img, date,
                           get_greenness_quadrants(img_data,
-                                                  poster_method_pixelCount,
-                                                  #"HSV", 
-                                                  params=(80, 90))))
+                                                  GCC,
+                                                  "RGB",
+                                                  )))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
