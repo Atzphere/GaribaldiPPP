@@ -199,7 +199,7 @@ def process_camera(zipped):
                           get_greenness_quadrants(img_data,
                                                   poster_method_pixelCount,
                                                   #"HSV", 
-                                                  (80, 90))))
+                                                  params=(80, 90))))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
     return entries
