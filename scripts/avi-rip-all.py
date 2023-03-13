@@ -143,7 +143,7 @@ def get_colored_images(frames, campath, day, output, cname, date_offset=0):
     else:
         print("Output folder already exists, using this.")
     for index, frame in enumerate(result):
-        skvideo.io.vwrite(newpath + "/{cname}_day{date:03d}_{num:03d}_.jpg".
+        skvideo.io.vwrite(newpath_day + "/{cname}_day{date:03d}_{num:03d}_.jpg".
                           format(cname=camera_name,
                                  date=(day + date_offset),
                                  num=(index)), frame)
