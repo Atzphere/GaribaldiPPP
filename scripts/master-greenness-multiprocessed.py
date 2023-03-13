@@ -324,6 +324,7 @@ def process_camera_all_photos(zipped):
         entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
                              np.mean(np.nanpercentile(values, percentile))))
         date += dt.timedelta(days=1)
+    print("...done")
     return entries
 
 
@@ -341,14 +342,16 @@ if __name__ == "__main__":
         worklist = zip(cameras, cameranames, methods, percentiles)
         results = p.map(process_camera_all_photos, worklist)
 
-    for result in results:
-        masterentries.extend(result)
+        print("writing {}".format(output_name))
 
-    with open(output_name, mode="w", newline='') as output:
-        output_writer = csv.writer(
-            output, delimiter=',', quoting=csv.QUOTE_NONE)
-        for entry in masterentries:
-            output_writer.writerow(entry.return_csv_line())
+        for result in results:
+            masterentries.extend(result)
+
+        with open(output_name, mode="w", newline='') as output:
+            output_writer = csv.writer(
+                output, delimiter=',', quoting=csv.QUOTE_NONE)
+            for entry in masterentries:
+                output_writer.writerow(entry.return_csv_line())
     p.close()
     p.join()
     print("done")
