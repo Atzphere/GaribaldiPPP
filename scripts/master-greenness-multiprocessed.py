@@ -319,8 +319,10 @@ def process_camera_all_photos(zipped):
                                                 method,
                                                 "RGB",))
                 processed_already.append(imgname)
+                print(type(entries))
+                print(entries)
         entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
-                             np.mean(np.percentile(values, percentile))))
+                             np.mean(np.nanpercentile(values, percentile))))
         date += dt.timedelta(days=1)
     return entries
 
@@ -329,13 +331,14 @@ if __name__ == "__main__":
     print("GREENNESS: initializing multiprocessing pool (using {} cores)"
           .format(mp.cpu_count()))
     p = mp.Pool(mp.cpu_count())
+    percentile = SETTINGS.percentile
     print("{} worker processes started".format(mp.cpu_count()))
     for method, label in SETTINGS.runs:
         masterentries = []
         output_name = label + ".csv"
         methods = [method] * len(cameras)
-        labels = [label] * len(cameras)
-        worklist = zip(cameras, cameranames, methods, labels)
+        percentiles = [percentile] * len(cameras)
+        worklist = zip(cameras, cameranames, methods, percentiles)
         results = p.map(process_camera_all_photos, worklist)
 
     for result in results:
