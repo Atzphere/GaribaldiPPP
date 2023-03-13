@@ -36,6 +36,7 @@ Note: as of 3/13/2023 the dupes and invalids folders are ignored when
 using the "process all images" pipeline.
 '''
 
+
 def poster_method_pixelCount(img, minvalue=80, maxvalue=90):
     Hue = img[:, :, 0]
     # Make mask of zeroes in which we will set greens to 1
@@ -58,6 +59,7 @@ def TWOG_RBi(img):
     return (2 * green) - (red + blue)
 
 # CONFIGURABLES:
+
 
 global_label = "_90P_2022"
 
@@ -331,7 +333,9 @@ if __name__ == "__main__":
     for method, label in SETTINGS.runs:
         masterentries = []
         output_name = label + ".csv"
-        worklist = zip(cameras, cameranames, method, label)
+        methods = [method] * len(cameras)
+        labels = [label] * len(cameras)
+        worklist = zip(cameras, cameranames, methods, labels)
         results = p.map(process_camera_single, worklist)
 
     for result in results:
