@@ -38,7 +38,7 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
 
         numframes (int) : the number of frames to get.
     '''
-    print("processing {}".format(avi))
+    print("processing {}".format(os.path.basenam(avi)))
     if numframes == -1:
         return skvideo.io.vreader(avi)  
     else:
@@ -96,10 +96,12 @@ def get_colored_images(frames):
                  This format is naturally returned by avi_to_imgseq()
 
     '''
+    print("processing frames...")
     colored_frames = []
     for frame in frames:
         if not is_grayscale(frame):
             colored_frames.append(frame)
+    print("...done")
     if len(colored_frames) != 0:
         return colored_frames
     else:
