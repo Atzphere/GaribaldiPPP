@@ -79,7 +79,7 @@ def is_grayscale(frame, samplex=5, sampley=5):
     return np.all([truthsRG, truthsGB])
 
 
-def get_colored_images(frames, cname, day, output):
+def get_colored_images(frames, cname, day, output, cname, date_offset=0):
     '''
     Gets all non-B&W images in an image sequence.
     Useful for daylight detection from the phenocams - they
@@ -105,23 +105,23 @@ def get_colored_images(frames, cname, day, output):
             colored_frames.append(frame)
     # print("...done")
     # print("RAM % used:", psutil.virtual_memory()[2])
-    print("trying result generation", end="\r")
-    print("done")
+    # print("trying result generation", end="\r")
+    # print("done")
     if len(colored_frames) != 0:
         result = colored_frames
     else:
         print("FRAME PROCESSING: NO COLORED FRAMES FOUND FOR A FILE")
         result = [errorNoColor]
 
-    print("trying generating camera_name", end="\r")
+    # print("trying generating camera_name", end="\r")
     try:
-        camera_name = os.path.basename(cname)
+        camera_name = cname
     except:
         print("DID NOT GO WELL")
-    print("done")
+    #print("done")
     newpath = output + "/" + camera_name
 
-    print("finished new path establishment")
+    # print("finished new path establishment")
 
     try:
         if not os.path.exists(newpath):
@@ -211,7 +211,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         '''
         day = input_tuple[0]
         path = input_tuple[1]
-        return get_colored_images(avi_to_imgseq(path, numframes), path, day, output)
+        return get_colored_images(avi_to_imgseq(path, numframes), path, day, output, camera_name)
 
     p.map(func_wrapper, enumerate(video_worklist))
 
