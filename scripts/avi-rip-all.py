@@ -79,7 +79,7 @@ def is_grayscale(frame, samplex=5, sampley=5):
     return np.all([truthsRG, truthsGB])
 
 
-def get_colored_images(frames, cname, day):
+def get_colored_images(frames, cname, day, output):
     '''
     Gets all non-B&W images in an image sequence.
     Useful for daylight detection from the phenocams - they
@@ -211,7 +211,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         '''
         day = input_tuple[0]
         path = input_tuple[1]
-        return get_colored_images(avi_to_imgseq(path, numframes), path, day)
+        return get_colored_images(avi_to_imgseq(path, numframes), path, day, output)
 
     p.map(func_wrapper, enumerate(video_worklist))
 
@@ -254,13 +254,21 @@ if __name__ == "__main__":
     print("starting process pool: {num} workers.".format(num=process_count))
     p = mp.Pool(process_count)
     print("started")
-    for camera in worklist:
         if os.path.basename(camera) in problematics.keys():
             process_camera(
                 camera, date_offset=problematics[os.path.basename(camera)])
         else:
             process_camera(camera)
 
+    '''
+    for camera in worklist:
+        try:
+            if os.path.basename(camera) in problematics.keys():
+                process_camera(
+                    camera, date_offset=problematics[os.path.basename(camera)])
+            else:
+                process_camera(camera)
+    '''
     p.close()
     p.join()
     print("finished.")
