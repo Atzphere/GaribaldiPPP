@@ -38,8 +38,9 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
 
         numframes (int) : the number of frames to get.
     '''
+    print("processing {}".format(avi))
     if numframes == -1:
-        return skvideo.io.vreader(avi)
+        return skvideo.io.vreader(avi)  
     else:
         return skvideo.io.vreader(avi, num_frames=numframes)
 
@@ -180,12 +181,18 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
             cname=camera_name))
 
     for day, frames in enumerate(results):
+        newpath_day = new=ath + "/day{num:03d}".format(num=day)
+        if not os.path.exists(newpath_day):
+            os.makedirs(newpath_day)
+            print("Created output folder for camera {cname} day {day}".format(
+                cname=camera_name, day=day))
+        else:
+            print("Output folder already exists, using this.")
         for index, frame in enumerate(frames):
             skvideo.io.vwrite(newpath + "/{cname}_day{date:03d}_{num:03d}_.jpg".
                               format(cname=camera_name,
                                      date=(day + date_offset),
                                      num=(index)), frame)
-
 
 
 '''

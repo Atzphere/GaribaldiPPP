@@ -90,7 +90,7 @@ def get_first_colored(frames):
         frames : arraylike of ndarrays with shape (x, y, 3)
                  where x, y are image dimensions and the 3-array contains RGB
                  Example: a pure-black 100x100px image would be
-                 np.zeros((100, 100, 3))
+                 np.zeros((100, 100, (0, 0, 0)))
 
                  This format is naturally returned by avi_to_imgseq()
 
