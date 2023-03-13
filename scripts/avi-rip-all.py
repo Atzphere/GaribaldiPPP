@@ -172,6 +172,8 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
 
     results = p.map(func_wrapper, video_worklist)
 
+    print("videos processed, writing to files...")
+
     newpath = output + "/" + camera_name
 
     if not os.path.exists(newpath):
