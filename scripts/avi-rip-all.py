@@ -38,7 +38,7 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
 
         numframes (int) : the number of frames to get.
     '''
-    print("processing {}".format(os.path.basenam(avi)))
+    print("processing {}".format(os.path.basename(avi)))
     if numframes == -1:
         return skvideo.io.vreader(avi)  
     else:
