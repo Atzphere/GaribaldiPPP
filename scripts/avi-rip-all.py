@@ -103,7 +103,7 @@ def get_colored_images(frames):
         if not is_grayscale(frame):
             colored_frames.append(frame)
     print("...done")
-    print("RAM memory % used:', psutil.virtual_memory()[2]")
+    print("RAM memory % used:", psutil.virtual_memory()[2])
     if len(colored_frames) != 0:
         return colored_frames
     else:
