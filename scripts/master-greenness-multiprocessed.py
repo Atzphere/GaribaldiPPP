@@ -288,7 +288,7 @@ def process_camera_all_photos(zipped):
     day_folders = dirtools.get_subdirs(camera, fullpath=True)
     day_nums = [get_day_num(i) for i in day_folders]
 
-    day_folders = [x for _, x in sorted(zip(day_nums, day_names))]
+    day_folders = [x for _, x in sorted(zip(day_nums, day_folders))]
 
     if "W" in name:
         treatment = "W"
