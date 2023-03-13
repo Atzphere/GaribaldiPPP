@@ -105,12 +105,14 @@ def get_colored_images(frames, cname, day):
             colored_frames.append(frame)
     # print("...done")
     # print("RAM % used:", psutil.virtual_memory()[2])
+    print("trying result generation")
     if len(colored_frames) != 0:
         result = colored_frames
     else:
         print("FRAME PROCESSING: NO COLORED FRAMES FOUND FOR A FILE")
         result = [errorNoColor]
 
+    print("trying generating camera_name")
     camera_name = os.path.basename(cname)
 
     newpath = output + "/" + camera_name
