@@ -98,13 +98,13 @@ def get_colored_images(frames, cname, day):
                  This format is naturally returned by avi_to_imgseq()
 
     '''
-    print("processing frames...")
+    # print("processing frames...")
     colored_frames = []
     for frame in frames:
         if not is_grayscale(frame):
             colored_frames.append(frame)
-    print("...done")
-    print("RAM % used:", psutil.virtual_memory()[2])
+    # print("...done")
+    # print("RAM % used:", psutil.virtual_memory()[2])
     print(dir())
     if len(colored_frames) != 0:
         result = colored_frames
@@ -253,6 +253,9 @@ if __name__ == "__main__":
         except:
             print("something went wrong with {cam}".format(
                 cam=os.path.abspath(camera)))
+            p.close()
+            p.join()
+            quit()
     p.close()
     p.join()
     print("finished.")
