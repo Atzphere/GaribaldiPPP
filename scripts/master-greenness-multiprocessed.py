@@ -61,7 +61,7 @@ def TWOG_RBi(img):
 # CONFIGURABLES:
 
 
-global_label = "_90P_2022"
+global_label = "MEAN_STDEV_50P_75P_90P_95P_2022"
 
 SETTINGS = Setting((poster_method_pixelCount,
                     GCC,
@@ -71,7 +71,7 @@ SETTINGS = Setting((poster_method_pixelCount,
                     "2G_RBi" + global_label),
                    do_quadrants=True,
                    all_images=True,
-                   percentile=90)
+                   percentile=75)
 
 CAMERA_DIRECTORY = dataloc.cameras
 INVALIDS_DIRECTORY = dataloc.invalids
@@ -322,9 +322,14 @@ def process_camera_all_photos(zipped):
                 # print(type(entries))
                 # print(entries)
         entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
-                             np.mean(np.nanpercentile(values, percentile))))
+                             (np.mean(values),
+                              np.std(values),
+                              np.nanpercentile(values, 50),
+                              np.nanpercentile(values, 75),
+                              np.nanpercentile(values, 90),
+                              np.nanpercentile(values, 95))))
         date += dt.timedelta(days=1)
-    print("...done")
+    print("processing {}: ...done".format(name))
     return entries
 
 
