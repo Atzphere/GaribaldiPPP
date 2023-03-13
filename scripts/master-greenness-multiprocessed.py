@@ -319,8 +319,8 @@ def process_camera_all_photos(zipped):
                                                 method,
                                                 "RGB",))
                 processed_already.append(imgname)
-                print(type(entries))
-                print(entries)
+                # print(type(entries))
+                # print(entries)
         entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
                              np.mean(np.nanpercentile(values, percentile))))
         date += dt.timedelta(days=1)
