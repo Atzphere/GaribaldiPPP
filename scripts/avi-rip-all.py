@@ -3,9 +3,10 @@ import skvideo.io
 import os
 import numpy as np
 import multiprocess as mp
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 import dirtools
 import dataloc
+import psutil
 
 # only get the first 9 frames
 
@@ -102,6 +103,7 @@ def get_colored_images(frames):
         if not is_grayscale(frame):
             colored_frames.append(frame)
     print("...done")
+    print("RAM memory % used:', psutil.virtual_memory()[2]")
     if len(colored_frames) != 0:
         return colored_frames
     else:
