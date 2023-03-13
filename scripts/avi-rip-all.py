@@ -79,7 +79,7 @@ def is_grayscale(frame, samplex=5, sampley=5):
     return np.all([truthsRG, truthsGB])
 
 
-def get_colored_images(frames, cname, day, output, cname, date_offset=0):
+def get_colored_images(frames, campath, day, output, cname, date_offset=0):
     '''
     Gets all non-B&W images in an image sequence.
     Useful for daylight detection from the phenocams - they
