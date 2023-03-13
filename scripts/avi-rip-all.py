@@ -40,7 +40,7 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
         numframes (int) : the number of frames to get.
     '''
     avi 
-    print("processing {}".format(os.path.basename(avi)))
+    # print("processing {}".format(os.path.basename(avi)))
     if numframes == -1:
         return skvideo.io.vreader(avi)  
     else:
@@ -105,7 +105,6 @@ def get_colored_images(frames, cname, day):
             colored_frames.append(frame)
     # print("...done")
     # print("RAM % used:", psutil.virtual_memory()[2])
-    print(dir())
     if len(colored_frames) != 0:
         result = colored_frames
     else:
@@ -116,13 +115,19 @@ def get_colored_images(frames, cname, day):
 
     newpath = output + "/" + camera_name
 
-    if not os.path.exists(newpath):
-        os.makedirs(newpath)
-        print("Created output folder for camera {cname}".format(
-            cname=camera_name))
-    else:
-        print("Output folder {cname} already exists, using this.".format(
-            cname=camera_name))
+    print("finished new path establishment")
+
+    try:
+        if not os.path.exists(newpath):
+            os.makedirs(newpath)
+            print("Created output folder for camera {cname}".format(
+                cname=camera_name))
+        else:
+            print("Output folder {cname} already exists, using this.".format(
+                cname=camera_name))
+    except Exception as e:
+        print("error part 1")
+        print(e)
 
     newpath_day = newpath + "/day{num:03d}".format(num=day)
     if not os.path.exists(newpath_day):
