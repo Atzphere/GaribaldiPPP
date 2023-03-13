@@ -336,7 +336,7 @@ if __name__ == "__main__":
         methods = [method] * len(cameras)
         labels = [label] * len(cameras)
         worklist = zip(cameras, cameranames, methods, labels)
-        results = p.map(process_camera_single, worklist)
+        results = p.map(process_camera_all_photos, worklist)
 
     for result in results:
         masterentries.extend(result)
