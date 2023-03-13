@@ -1,3 +1,9 @@
+'''
+Extremely messy script to extract all images from a folder of AVIs and organize them.
+'''
+
+
+
 import skvideo
 import skvideo.io
 import os

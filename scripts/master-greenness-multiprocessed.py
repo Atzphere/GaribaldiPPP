@@ -24,23 +24,56 @@ import csv
 import multiprocess as mp
 import dataloc
 from collections.abc import Callable
+from greenness_settings import Setting
 
 '''
 REQUIREMENTS
 Folder of cameras i.e. the export one produced by avi-rip.py
 INVALIDS folder containing copies of invalid images
 DUPES folder containing copies of duplicate images
+
+Note: as of 3/13/2023 the dupes and invalids folders are ignored when
+using the "process all images" pipeline.
 '''
+
+def poster_method_pixelCount(img, minvalue=80, maxvalue=90):
+    Hue = img[:, :, 0]
+    # Make mask of zeroes in which we will set greens to 1
+    mask = np.zeros_like(Hue, dtype=np.uint8)
+
+    # Set all green pixels to 1
+    mask[(Hue >= minvalue) & (Hue <= maxvalue)] = 1
+    return mask.mean() * 100
+
+
+def GCC(img):
+    red, green, blue = np.mean(img[:, :, 0]), np.mean(
+        img[:, :, 1]), np.mean(img[:, :, 2])
+    return (green / (red + green + blue))
+
+
+def TWOG_RBi(img):
+    red, green, blue = np.mean(img[:, :, 0]), np.mean(
+        img[:, :, 1]), np.mean(img[:, :, 2])
+    return (2 * green) - (red + blue)
 
 # CONFIGURABLES:
 
-OUTPUT_FILE_NAME = "2022_OLDMETHOD_whole.csv"
+global_label = "_90P_2022"
+
+SETTINGS = Setting((poster_method_pixelCount,
+                    GCC,
+                    TWOG_RBi),
+                   ("poster_method" + global_label,
+                    "GCC" + global_label,
+                    "2G_RBi" + global_label),
+                   do_quadrants=True,
+                   all_images=True,
+                   percentile=90)
 
 CAMERA_DIRECTORY = dataloc.cameras
 INVALIDS_DIRECTORY = dataloc.invalids
 DUPES_DIRECTORY = dataloc.dupes
-
-do_quadrants = False
 
 # this is here because I haven't gotten OCR working yet to grab dates
 # the script counts up from these starts dates for every valid image.
@@ -57,11 +90,14 @@ COMMUNITY_SETTINGS = {"CASS": ("CASS", CASS_START),
 
 # Main code below
 
+do_quadrants = SETTINGS.do_quadrants
+
 nan = np.nan
 
 null_quads = (nan, nan, nan, nan)
 
 # I want to update this to use the apeman module once I get that working
+
 
 cameras = dirtools.get_subdirs(CAMERA_DIRECTORY, fullpath=True)
 cameranames = dirtools.get_subdirs(CAMERA_DIRECTORY)
@@ -95,26 +131,9 @@ def get_image_num(imgname, camname):
     return int(imgname.replace(camname + "_day", "").replace(".jpg", ""))
 
 
-def poster_method_pixelCount(img, minvalue, maxvalue):
-    Hue = img[:, :, 0]
-    # Make mask of zeroes in which we will set greens to 1
-    mask = np.zeros_like(Hue, dtype=np.uint8)
-
-    # Set all green pixels to 1
-    mask[(Hue >= minvalue) & (Hue <= maxvalue)] = 1
-    return mask.mean() * 100
-
-
-def GCC(img):
-    red, green, blue = np.mean(img[:, :, 0]), np.mean(
-        img[:, :, 1]), np.mean(img[:, :, 2])
-    return (green / (red + green + blue))
-
-
-def TWOG_RBi(img):
-    red, green, blue = np.mean(img[:, :, 0]), np.mean(
-        img[:, :, 1]), np.mean(img[:, :, 2])
-    return (2 * green) - (red + blue)
+def get_day_num(dirname):
+    daypos = dirname.index("day")
+    return int(dirname[daypos + 3: daypos + 6])
 
 
 def get_greenness_quadrants(img, extractor: Callable, itype=None, params=()):
@@ -188,7 +207,7 @@ print(get_greenness(test))
 '''
 
 
-def process_camera(zipped):
+def process_camera_single_photo(zipped):
     '''
     Wrapper for processing a tuple of (camera, cameraname)
     for multiprocessing.
@@ -254,18 +273,71 @@ def process_camera(zipped):
     return entries
 
 
+def process_camera_all_photos(zipped):
+    '''
+    Wrapper for processing a tuple of (camera, cameraname)
+    for multiprocessing. Uses new method (all photos per day)
+
+    Returns a list of Entry objects.
+    '''
+    camera, name, method, percentile = zipped
+    entries = []
+    processed_already = []
+    day_folders = dirtools.get_subdirs(camera, fullpath=True)
+
+    image_nums = [get_day_num(i) for i in image_names]
+    day_folders = [x for _, x in sorted(zip(day_nums, day_names))]
+
+    if "W" in name:
+        treatment = "W"
+    else:
+        treatment = "C"
+
+    for key in COMMUNITY_SETTINGS.keys():
+        if key in name:
+            site, start = COMMUNITY_SETTINGS[key]
+
+    plot = get_plot_num(name)
+
+    print("processing {}".format(name))
+    date = start
+    for day in day_folders:
+        values = []
+        image_wl = dirtools.get_files(day, fullpath=True)
+        image_names = dirtools.get_files(day, fullpath=False)
+        for img, imgname in zip(image_wl, image_names):
+            if imgname not in processed_already:
+                img_data = Image.open(img)
+                if do_quadrants:
+                    values.append(get_greenness_quadrants(img_data,
+                                                          method,
+                                                          "RGB",))
+                else:
+                    values.append(get_greenness(img_data,
+                                                method,
+                                                "RGB",))
+                processed_already.append(imgname)
+        entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
+                             np.mean(np.percentile(values, percentile))))
+        date += dt.timedelta(days=1)
+    return entries
+
+
 if __name__ == "__main__":
-    masterentries = []
     print("GREENNESS: initializing multiprocessing pool (using {} cores)"
           .format(mp.cpu_count()))
     p = mp.Pool(mp.cpu_count())
     print("{} worker processes started".format(mp.cpu_count()))
-    data = zip(cameras, cameranames)
-    results = p.map(process_camera, data)
+    for method, label in SETTINGS.runs:
+        masterentries = []
+        output_name = label + ".csv"
+        worklist = zip(cameras, cameranames, method, label)
+        results = p.map(process_camera_single, worklist)
+
     for result in results:
         masterentries.extend(result)
 
-    with open(OUTPUT_FILE_NAME, mode="w", newline='') as output:
+    with open(output_name, mode="w", newline='') as output:
         output_writer = csv.writer(
             output, delimiter=',', quoting=csv.QUOTE_NONE)
         for entry in masterentries:
