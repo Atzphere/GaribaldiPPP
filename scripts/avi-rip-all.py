@@ -39,6 +39,7 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
 
         numframes (int) : the number of frames to get.
     '''
+    avi 
     print("processing {}".format(os.path.basename(avi)))
     if numframes == -1:
         return skvideo.io.vreader(avi)  
@@ -78,7 +79,7 @@ def is_grayscale(frame, samplex=5, sampley=5):
     return np.all([truthsRG, truthsGB])
 
 
-def get_colored_images(frames, cname):
+def get_colored_images(frames, cname, day):
     '''
     Gets all non-B&W images in an image sequence.
     Useful for daylight detection from the phenocams - they
@@ -106,10 +107,10 @@ def get_colored_images(frames, cname):
     print("RAM % used:", psutil.virtual_memory()[2])
     print(dir())
     if len(colored_frames) != 0:
-        return colored_frames
+        result = colored_frames
     else:
         print("FRAME PROCESSING: NO COLORED FRAMES FOUND FOR A FILE")
-        return [errorNoColor]
+        result = [errorNoColor]
 
     camera_name = os.path.basename(cname)
 
@@ -123,19 +124,18 @@ def get_colored_images(frames, cname):
         print("Output folder {cname} already exists, using this.".format(
             cname=camera_name))
 
-    for day, frames in enumerate(results):
-        newpath_day = new=ath + "/day{num:03d}".format(num=day)
-        if not os.path.exists(newpath_day):
-            os.makedirs(newpath_day)
-            print("Created output folder for camera {cname} day {day}".format(
-                cname=camera_name, day=day))
-        else:
-            print("Output folder already exists, using this.")
-        for index, frame in enumerate(frames):
-            skvideo.io.vwrite(newpath + "/{cname}_day{date:03d}_{num:03d}_.jpg".
-                              format(cname=camera_name,
-                                     date=(day + date_offset),
-                                     num=(index)), frame)
+    newpath_day = newpath + "/day{num:03d}".format(num=day)
+    if not os.path.exists(newpath_day):
+        os.makedirs(newpath_day)
+        print("Created output folder for camera {cname} day {day}".format(
+            cname=camera_name, day=day))
+    else:
+        print("Output folder already exists, using this.")
+    for index, frame in enumerate(result):
+        skvideo.io.vwrite(newpath + "/{cname}_day{date:03d}_{num:03d}_.jpg".
+                          format(cname=camera_name,
+                                 date=(day + date_offset),
+                                 num=(index)), frame)
 
 
 # plt.imshow(get_first_colored(avi_to_imgseq("C:\\Users\\allen\\Documents\\Garibaldi ITEX\\Garibaldi_phenocams_Sept_2022\\Plot_photos\\CASS_Plot_photos_Aug9_2022\\CASS_9C\\100MEDIA\\DSCF0010.AVI")))
@@ -193,14 +193,16 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
     print("processing {cname} ({num} files)".format(
         cname=camera_name, num=len(video_worklist)))
 
-    def func_wrapper(path):
+    def func_wrapper(input_tuple):
         '''
         needed to get around pickling issues with multiprocessing & lambda
 
         '''
-        return get_colored_images(avi_to_imgseq(path, numframes), path)
+        day = input_tuple[0]
+        path = input_tuple[1]
+        return get_colored_images(avi_to_imgseq(path, numframes), path, day)
 
-    p.map(func_wrapper, video_worklist)
+    p.map(func_wrapper, enumerate(video_worklist))
 
     print("videos processed, writing to files...")
 
