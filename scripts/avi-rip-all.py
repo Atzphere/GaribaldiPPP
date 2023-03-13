@@ -254,21 +254,26 @@ if __name__ == "__main__":
     print("starting process pool: {num} workers.".format(num=process_count))
     p = mp.Pool(process_count)
     print("started")
-    if os.path.basename(camera) in problematics.keys():
-        process_camera(
-            camera, date_offset=problematics[os.path.basename(camera)])
-    else:
-        process_camera(camera)
 
-    '''
     for camera in worklist:
+        '''
         try:
             if os.path.basename(camera) in problematics.keys():
                 process_camera(
                     camera, date_offset=problematics[os.path.basename(camera)])
             else:
                 process_camera(camera)
-    '''
+        except:
+            print("something went wrong with {cam}".format(
+                cam=os.path.abspath(camera)))
+        '''
+
+        if os.path.basename(camera) in problematics.keys():
+            process_camera(
+                camera, date_offset=problematics[os.path.basename(camera)])
+        else:
+            process_camera(camera)
+
     p.close()
     p.join()
     print("finished.")
