@@ -61,15 +61,23 @@ def TWOG_RBi(img):
 # CONFIGURABLES:
 
 
-global_label = "MEAN_STDEV_50P_75P_90P_95P_2022"
+global_label = "NEWMAY2023_MEAN_STDEV_50P_75P_90P_95P_2022"
 
+'''
 SETTINGS = Setting((poster_method_pixelCount,
                     GCC,
                     TWOG_RBi),
                    ("poster_method" + global_label,
                     "GCC" + global_label,
                     "2G_RBi" + global_label),
-                   do_quadrants=True,
+                   do_quadrants=False,
+                   all_images=True,
+                   percentile=75)
+'''
+
+SETTINGS = Setting((poster_method_pixelCount),
+                   ("poster_method" + global_label),
+                   do_quadrants=False,
                    all_images=True,
                    percentile=75)
 
@@ -111,6 +119,9 @@ DUPES_WL = dirtools.get_files(DUPES_DIRECTORY, fullpath=True)
 
 
 class Entry:
+    '''
+    Convenient class for representing a single line of output data
+    '''
     def __init__(self, site, plot, treatment, filename,
                  date, greenness_quadrants):
         self.site = site
@@ -128,6 +139,14 @@ class Entry:
             return (self.site, self.plot, self.treatment,
                     self.filename, self.date, self.greenness_quadrants)
 
+class ImagePack:
+    '''
+    Class that associates a given image with context (day, name, seq# etc)
+    Used for multiprocessing the greenness extraction code.
+    '''
+    def __init__(self, img_dir, img_date):
+        self.img_dir = img_dir
+        self.img_date = img_date
 
 def get_image_num(imgname, camname):
     return int(imgname.replace(camname + "_day", "").replace(".jpg", ""))
@@ -215,10 +234,11 @@ def process_camera_single_photo(zipped):
     for multiprocessing.
 
     Returns a list of Entry objects.
+    Obsolete since we now use the entire series of photo per day
     '''
     camera, name = zipped
     entries = []
-    processed_already = []
+    processed_already = [] # get file names for later, remove invalid/duplicate photos
     image_names = [i for i in dirtools.get_files(camera) if "[" not in i]
     image_names.extend([i for i in INVALIDS if name in i])
     image_names.extend([i for i in DUPES if name in i])
@@ -272,13 +292,16 @@ def process_camera_single_photo(zipped):
                                             params=(80, 90))))
                 date += dt.timedelta(days=1)
                 processed_already.append(imgname)
-    return entries
+    return entries # OBSOLETE
 
 
 def process_camera_all_photos(zipped):
     '''
     Wrapper for processing a tuple of (camera, cameraname)
     for multiprocessing. Uses new method (all photos per day)
+
+    This is not ideal, we could see significant gains by processing individual
+    or days worth of photos instead. Do something about this in the future.
 
     Returns a list of Entry objects.
     '''
@@ -332,7 +355,80 @@ def process_camera_all_photos(zipped):
     print("processing {}: ...done".format(name))
     return entries
 
+def process_entire_camera_super_parallel(pool, camera, name, method, percentile):
+    '''
+    Process an entire camera's worth of photos using a given multiprocessing pool. 
+    '''
+    entries = []
+    pack_worklist = []
+    processed_already = []
+    day_folders = dirtools.get_subdirs(camera, fullpath=True)
+    day_nums = [get_day_num(i) for i in day_folders]
 
+    day_folders = [x for _, x in sorted(zip(day_nums, day_folders))]
+
+    if "W" in name:
+        treatment = "W"
+    else:
+        treatment = "C"
+
+    for key in COMMUNITY_SETTINGS.keys():
+        if key in name:
+            site, start = COMMUNITY_SETTINGS[key]
+            break
+
+    plot = get_plot_num(name)
+
+    def process_pack(imgpack):
+        img_data = Image.open(imgpack.img_dir)
+        if do_quadrants:
+            val = get_greenness_quadrants(img_data,
+                                                  method,
+                                                  "RGB",)
+        else:
+            val = get_greenness(img_data,
+                                        method,
+                                        "RGB",)
+        return (imgpack.img_date, val)
+
+    print("processing {}".format(name))
+    date = start
+    for day in day_folders:
+        values = []
+        image_wl = dirtools.get_files(day, fullpath=True)
+        image_names = dirtools.get_files(day, fullpath=False)
+        for img, imgname in zip(image_wl, image_names):
+            if imgname not in processed_already:
+                pack_worklist.append(ImagePack(img, date))
+                processed_already.append(imgname)
+
+        date += dt.timedelta(days=1)
+
+
+    results = pool.map(process_pack, pack_worklist) # multiprocessed part
+    collated_values = {}
+
+    for result in results: # unpack and record the result of the pool mapping
+        if result[0] not in collated_values.keys(): # if date not recorded yet
+            collated_values.update({result[0] : [result[1]]})
+        else:
+            collated_values[result[0]].append(result[1])
+    
+
+    for date in collated_values.keys(): # for each day, generate an entry.
+        values = collated_values[date]
+        entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
+                             (np.mean(values),
+                              np.std(values),
+                              np.nanpercentile(values, 50),
+                              np.nanpercentile(values, 75),
+                              np.nanpercentile(values, 90),
+                              np.nanpercentile(values, 95))))
+        
+    print("processing {}: ...done".format(name))
+    return entries
+
+''' this is for old non-super-parallel extraction
 if __name__ == "__main__":
     print("GREENNESS: initializing multiprocessing pool (using {} cores)"
           .format(mp.cpu_count()))
@@ -350,6 +446,37 @@ if __name__ == "__main__":
         print("writing {}".format(output_name))
 
         for result in results:
+            masterentries.extend(result)
+
+        with open(output_name, mode="w", newline='') as output:
+            output_writer = csv.writer(
+                output, delimiter=',', quoting=csv.QUOTE_NONE)
+            for entry in masterentries:
+                output_writer.writerow(entry.return_csv_line())
+    p.close()
+    p.join()
+    print("done")
+'''
+
+if __name__ == "__main__":
+    print("GREENNESS: initializing multiprocessing pool (using {} cores)"
+          .format(mp.cpu_count()))
+    p = mp.Pool(mp.cpu_count())
+    percentile = SETTINGS.percentile
+    print("{} worker processes started".format(mp.cpu_count()))
+    for method, label in SETTINGS.runs:
+        masterentries = []
+        output_name = label + ".csv"
+        methods = [method] * len(cameras)
+        percentiles = [percentile] * len(cameras)
+        worklist = zip(cameras, cameranames, methods, percentiles)
+        final_results = []
+        for job in worklist:
+            final_results.append(process_entire_camera_super_parallel(p, *job))
+
+        print("writing {}".format(output_name))
+
+        for result in final_results:
             masterentries.extend(result)
 
         with open(output_name, mode="w", newline='') as output:
