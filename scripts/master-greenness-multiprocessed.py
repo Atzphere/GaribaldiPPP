@@ -392,6 +392,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
             val = get_greenness(img_data,
                                         method,
                                         "RGB",)
+        print(img_data)
         return (imgpack.img_date, val)
 
     print("processing {}".format(name))
@@ -420,6 +421,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
 
     for date in collated_values.keys(): # for each day, generate an entry.
         values = collated_values[date]
+        print(values)
         entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
                              (np.mean(values),
                               np.std(values),
