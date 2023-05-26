@@ -25,6 +25,7 @@ import multiprocess as mp
 import dataloc
 from collections.abc import Callable
 from greenness_settings import Setting
+import whitebalance
 
 '''
 REQUIREMENTS
@@ -380,7 +381,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
     plot = get_plot_num(name)
 
     def process_pack(imgpack):
-        img_data = Image.open(imgpack.img_dir)
+        img_data = whitebalance.percentile_white_balance(np.array(Image.open(imgpack.img_dir)), 90)
         if do_quadrants:
             val = get_greenness_quadrants(img_data,
                                                   method,
