@@ -209,8 +209,10 @@ def get_greenness(img, extractor: Callable, itype=None, params=()):
         params : Tuple
         Parameters to be passed to the extractor i.e. threshold values.
     '''
-
-    im = np.array((img).convert(itype))
+    if type(img) is not np.ndarray:
+        im = np.array((img).convert(itype))
+    else:
+        im = img
 
     return extractor(im, *params)
 
