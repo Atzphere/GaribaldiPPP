@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-import cv2
+# import cv2
 
 def percentile_white_balance(img, percentile=100):
     """White balance an image based on percentile values.
@@ -40,7 +40,7 @@ def rgb_to_srgb(rgb):
     ret[idx1] = np.power(1.055 * rgb[idx1], 1.0 / 2.4) - 0.055
     return ret
 
-
+'''
 def load_image(fname):
     img = cv2.imread(fname)
     img_arr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -48,3 +48,4 @@ def load_image(fname):
     img_wb = percentile_white_balance(img_lin, percentile=95)
     img_arr = rgb_to_srgb(img_lin)
     return img_arr
+'''
