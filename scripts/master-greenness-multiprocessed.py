@@ -384,6 +384,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
 
     def process_pack(imgpack):
         img_data = whitebalance.percentile_white_balance(np.array(Image.open(imgpack.img_dir)), 90)
+        img_data *= 255
         if do_quadrants:
             val = get_greenness_quadrants(img_data,
                                                   method,
@@ -392,7 +393,8 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
             val = get_greenness(img_data,
                                         method,
                                         "RGB",)
-        print(img_data)
+        print(val)
+        # print(img_data) from when I was debugging the zeros issue
         return (imgpack.img_date, val)
 
     print("processing {}".format(name))
