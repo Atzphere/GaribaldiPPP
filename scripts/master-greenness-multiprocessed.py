@@ -479,7 +479,7 @@ if __name__ == "__main__":
         percentiles = [percentile] * len(cameras)
         worklist = zip(cameras, cameranames, methods, percentiles)
         final_results = []
-        for job in tqdm.tqdm(worklist):
+        for job in worklist:
             final_results.append(process_entire_camera_super_parallel(p, *job))
 
         print("writing {}".format(output_name))
