@@ -13,6 +13,7 @@ import multiprocess as mp
 import dirtools
 import dataloc
 import psutil
+import tqdm
 
 # only get the first 9 frames
 
@@ -123,8 +124,9 @@ def get_colored_images(frames, campath, day, output, cname, date_offset=0):
     # print("trying generating camera_name", end="\r")
     try:
         camera_name = cname
-    except:
+    except Exception as e:
         print("DID NOT GO WELL")
+        print(e)
     #print("done")
     newpath = output + "/" + camera_name
 
@@ -136,8 +138,9 @@ def get_colored_images(frames, campath, day, output, cname, date_offset=0):
             print("Created output folder for camera {cname}".format(
                 cname=camera_name))
         else:
-            print("Output folder {cname} already exists, using this.".format(
-                cname=camera_name))
+            if day == 0:
+                print("Output folder {cname} already exists, using this.".format(
+                    cname=camera_name))
     except Exception as e:
         print("error part 1")
         print(e)
@@ -149,11 +152,13 @@ def get_colored_images(frames, campath, day, output, cname, date_offset=0):
             cname=camera_name, day=day))
     else:
         print("Output folder already exists, using this.")
+    print("writing to files...", end='')
     for index, frame in enumerate(result):
         skvideo.io.vwrite(newpath_day + "/{cname}_day{date:03d}_{num:03d}_.jpg".
                           format(cname=camera_name,
                                  date=(day + date_offset),
                                  num=(index)), frame)
+    print(" done.")
 
 
 # plt.imshow(get_first_colored(avi_to_imgseq("C:\\Users\\allen\\Documents\\Garibaldi ITEX\\Garibaldi_phenocams_Sept_2022\\Plot_photos\\CASS_Plot_photos_Aug9_2022\\CASS_9C\\100MEDIA\\DSCF0010.AVI")))
@@ -222,9 +227,11 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         path = input_tuple[1]
         return get_colored_images(avi_to_imgseq(path, numframes), path, day, output, camera_name)
 
-    p.map(func_wrapper, enumerate(video_worklist))
+    for _ in tqdm.tqdm(pool.map(func_wrapper, enumerate(video_worklist)), total=len(video_worklist)):
+        pass
+    # p.map(func_wrapper, enumerate(video_worklist))
 
-    print("videos processed, writing to files...")
+    # print("videos processed, writing to files...")
 
 
 '''
