@@ -27,6 +27,7 @@ errorNoColor = np.zeros((300, 300, 3))
 errorNoColor[:, :, 0] = 255
 
 problematics = {}  # date offsets
+# problematics is now obsolete, we run it with greenness extraction for now
 
 
 def avi_to_imgseq(avi, numframes=keep_frame_num):
@@ -189,22 +190,24 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
                                    Defaults to the camera folder name.
 
     '''
-    camera_name = os.path.basename(camera_folder)
+    camera_name = os.path.basename(camera_folder) # get camera name for labels
 
-    source = camera_folder + data_folder
+    source = camera_folder + data_folder # get camera image data location
 
     '''
     generate worklist of files to process, resorting stuff to
     account for some cameras bugging out and restarting their counts.
     '''
-    files = dirtools.get_files(source)
+    files = dirtools.get_files(source, fullpath=True)
     # weird hack to deal with brackets (duplicate files from number overflow
     # should be last)
     sort_template = map((lambda f: ("zzzzz" + f) if "(" in f else f), files)
     files_sorted = [s for _, s in sorted(
         zip(sort_template, files), key=lambda pair: pair[0])]
+    print("sorting template: {}".format(sort_template))
+    print("sorted files: {}".format(files_sorted))
 
-    video_worklist = dirtools.get_files(source, fullpath=True)
+    video_worklist = files_sorted # dirtools.get_files(source, fullpath=True)
     # print("video worklist: {v}".format(v=video_worklist))
 
     print("processing {cname} ({num} files)".format(
