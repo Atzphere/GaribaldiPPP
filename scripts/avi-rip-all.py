@@ -227,7 +227,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         path = input_tuple[1]
         return get_colored_images(avi_to_imgseq(path, numframes), path, day, output, camera_name)
 
-    for _ in tqdm.tqdm(pool.map(func_wrapper, enumerate(video_worklist)), total=len(video_worklist)):
+    for _ in tqdm.tqdm(p.map(func_wrapper, enumerate(video_worklist)), total=len(video_worklist)):
         pass
     # p.map(func_wrapper, enumerate(video_worklist))
 
