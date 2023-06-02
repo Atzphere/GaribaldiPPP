@@ -26,6 +26,7 @@ import dataloc
 from collections.abc import Callable
 from greenness_settings import Setting
 import whitebalance
+import tqdm
 
 '''
 REQUIREMENTS
@@ -393,7 +394,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
             val = get_greenness(img_data,
                                         method,
                                         "RGB",)
-        print(val)
+        # print(val)
         # print(img_data) from when I was debugging the zeros issue
         return (imgpack.img_date, val)
 
@@ -409,9 +410,8 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
                 processed_already.append(imgname)
 
         date += dt.timedelta(days=1)
-
-
-    results = pool.map(process_pack, pack_worklist) # multiprocessed part
+    results = list(tqdm.tqdm(pool.imap(process_pack, pack_worklist), total=len(pack_worklist)))
+    # results = pool.imap(process_pack, pack_worklist) # multiprocessed part
     collated_values = {}
 
     for result in results: # unpack and record the result of the pool mapping
