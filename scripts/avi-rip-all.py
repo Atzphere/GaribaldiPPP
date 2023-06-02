@@ -204,8 +204,8 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
     sort_template = map((lambda f: ("zzzzz" + f) if "(" in f else f), files)
     files_sorted = [s for _, s in sorted(
         zip(sort_template, files), key=lambda pair: pair[0])]
-    print("sorting template: {}".format(sort_template))
-    print("sorted files: {}".format(files_sorted))
+    # print("sorting template: {}".format(sort_template))
+    # print("sorted files: {}".format(files_sorted))
 
     video_worklist = files_sorted # dirtools.get_files(source, fullpath=True)
     # print("video worklist: {v}".format(v=video_worklist))
