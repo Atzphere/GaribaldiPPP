@@ -62,7 +62,7 @@ def TWOG_RBi(img):
 # CONFIGURABLES:
 
 
-global_label = "NEWMAY2023_MEAN_STDEV_50P_75P_90P_95P_2022"
+global_label = "JUNE2023_SORTED_MEAN_STDEV_50P_75P_90P_95P"
 
 '''
 SETTINGS = Setting((poster_method_pixelCount,
@@ -423,8 +423,9 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
 
     for date in collated_values.keys(): # for each day, generate an entry.
         values = collated_values[date]
-        print(values)
+        # print(values)
         entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
+        # look into doing a mode here too
                              (np.mean(values),
                               np.std(values),
                               np.nanpercentile(values, 50),
