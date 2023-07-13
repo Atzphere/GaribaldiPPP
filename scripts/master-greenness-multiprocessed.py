@@ -171,11 +171,7 @@ def get_day_num(dirname):
     return int(dirname[daypos + 3: daypos + 6])
 
 def colorbalance_by_reference(refvals, sample):
-    try:
-        sample_avgs = np.mean(sample, axis=(0, 1))
-    except Exception as e:
-        print(sample)
-        print(e)
+    sample_avgs = np.mean(sample, axis=(0, 1))
     ratio = sample / refvals
     return sample * ratio
 
@@ -283,7 +279,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
     def process_pack(imgpack):
         raw_image = Image.open(imgpack.img_dir)
         # color balancing
-        colorbal_image = colorbalance_by_reference(raw_image, imgpack.ref_vals)
+        colorbal_image = colorbalance_by_reference(imgpack.ref_vals, raw_image)
         # apply 90th percentile whitebalancing as pre-processing
         img_data = whitebalance.percentile_white_balance(
             np.array(colorbal_image), 90)
@@ -310,6 +306,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
         for img, imgname in zip(image_wl, image_names):
             ref = img
             if get_timestamp(imgname) == "12:00:00":
+                print("reference image found.")
                 break
         ref_avgs = np.mean(Image.open(ref), axis=(0, 1))
         for img, imgname in zip(image_wl, image_names):
