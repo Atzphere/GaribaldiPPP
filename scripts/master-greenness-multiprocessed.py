@@ -307,7 +307,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
             ref = img
             if get_timestamp(imgname) == "12:00:00":
                 break
-
+        print(ref)
         ref_avgs = np.mean(ref, axis=(0, 1))
         for img, imgname in zip(image_wl, image_names):
             if imgname not in processed_already:
