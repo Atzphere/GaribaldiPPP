@@ -171,7 +171,11 @@ def get_day_num(dirname):
     return int(dirname[daypos + 3: daypos + 6])
 
 def colorbalance_by_reference(refvals, sample):
-    sample_avgs = np.mean(sample, axis=(0, 1))
+    try:
+        sample_avgs = np.mean(sample, axis=(0, 1))
+    except Exception as e:
+        print(sample)
+        print(e)
     ratio = sample / refvals
     return sample * ratio
 
