@@ -63,7 +63,7 @@ def TWOG_RBi(img):
 # CONFIGURABLES:
 
 
-global_label = "JUNE2023_SORTED_MEAN_STDEV_50P_75P_90P_95P"
+global_label = "JULY2023_COLORBAL_MEAN_STDEV_50P_75P_90P_95P"
 
 '''
 SETTINGS = Setting((poster_method_pixelCount,
