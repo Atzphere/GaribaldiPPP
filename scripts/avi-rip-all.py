@@ -16,6 +16,7 @@ import dirtools
 import dataloc
 import psutil
 import tqdm
+from nptime import nptime
 import datetime
 
 # grab all frames
@@ -119,7 +120,7 @@ def process_avi(frames, campath, day, output, cname,
     # print("processing frames...")
     collected_frames = []
     for frame in frames:
-        time = datetime.time(hour=5)
+        time = nptime(hour=5)
         if not is_grayscale(frame) or not reject_gray:
             collected_frames.append((frame, time))
         time += datetime.timedelta(minutes=30)
