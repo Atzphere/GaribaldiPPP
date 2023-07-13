@@ -119,8 +119,8 @@ def process_avi(frames, campath, day, output, cname,
     '''
     # print("processing frames...")
     collected_frames = []
+    time = nptime(hour=5)
     for frame in frames:
-        time = nptime(hour=5)
         if not is_grayscale(frame) or not reject_gray:
             collected_frames.append((frame, time))
         time += datetime.timedelta(minutes=30)
