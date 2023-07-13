@@ -151,13 +151,15 @@ class ImagePack:
     Used for multiprocessing the greenness extraction code.
     '''
 
-    def __init__(self, img_dir, img_date, colorbalance_reference):
+    def __init__(self, img_dir, img_date, colorbal_ref_vals):
         self.img_dir = img_dir
         self.img_date = img_date
-        self.ref = colorbalance_reference
+        self.ref_vals = colorbal_ref_vals
 
 
-def get_
+def get_timestamp(imgname):
+    return imgname[len(imgname) - 8: len(imgname)]
+
 
 
 def get_image_num(imgname, camname):
@@ -168,6 +170,10 @@ def get_day_num(dirname):
     daypos = dirname.index("day")
     return int(dirname[daypos + 3: daypos + 6])
 
+def colorbalance_by_reference(refvals, sample):
+    sample_avgs = np.mean(sample, axis=(0, 1))
+    ratio = sample / refvals
+    return sample * ratio
 
 def get_greenness_quadrants(img, extractor: Callable, itype=None, params=()):
     '''
@@ -271,9 +277,12 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
     plot = get_plot_num(name)
 
     def process_pack(imgpack):
+        raw_image = Image.open(imgpack.img_dir)
+        # color balancing
+        colorbal_image = colorbalance_by_reference(raw_image, imgpack.ref_vals)
         # apply 90th percentile whitebalancing as pre-processing
         img_data = whitebalance.percentile_white_balance(
-            np.array(Image.open(imgpack.img_dir)), 90)
+            np.array(colorbal_image), 90)
         img_data *= 255
         if do_quadrants:
             val = get_greenness_quadrants(img_data,
@@ -295,8 +304,14 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
         image_wl = dirtools.get_files(day, fullpath=True)
         image_names = dirtools.get_files(day, fullpath=False)
         for img, imgname in zip(image_wl, image_names):
+            ref = img
+            if get_timestamp(imgname) == "12:00:00":
+                break
+
+        ref_avgs = np.mean(ref, axis=(0, 1))
+        for img, imgname in zip(image_wl, image_names):
             if imgname not in processed_already:
-                pack_worklist.append(ImagePack(img, date))
+                pack_worklist.append(ImagePack(img, date, ref))
                 processed_already.append(imgname)
 
         date += dt.timedelta(days=1)
