@@ -119,11 +119,14 @@ DUPES = dirtools.get_files(DUPES_DIRECTORY)
 INVALIDS_WL = dirtools.get_files(INVALIDS_DIRECTORY, fullpath=True)
 DUPES_WL = dirtools.get_files(DUPES_DIRECTORY, fullpath=True)
 
+# HELPERS
+
 
 class Entry:
     '''
     Convenient class for representing a single line of output data
     '''
+
     def __init__(self, site, plot, treatment, filename,
                  date, greenness_quadrants):
         self.site = site
@@ -141,14 +144,21 @@ class Entry:
             return (self.site, self.plot, self.treatment,
                     self.filename, self.date, self.greenness_quadrants)
 
+
 class ImagePack:
     '''
     Class that associates a given image with context (day, name, seq# etc)
     Used for multiprocessing the greenness extraction code.
     '''
-    def __init__(self, img_dir, img_date):
+
+    def __init__(self, img_dir, img_date, colorbalance_reference):
         self.img_dir = img_dir
         self.img_date = img_date
+        self.ref = colorbalance_reference
+
+
+def get_
+
 
 def get_image_num(imgname, camname):
     return int(imgname.replace(camname + "_day", "").replace(".jpg", ""))
@@ -232,140 +242,17 @@ print(get_greenness(test))
 '''
 
 
-def process_camera_single_photo(zipped):
-    '''
-    Wrapper for processing a tuple of (camera, cameraname)
-    for multiprocessing.
-
-    Returns a list of Entry objects.
-    Obsolete since we now use the entire series of photo per day
-    '''
-    camera, name = zipped
-    entries = []
-    processed_already = [] # get file names for later, remove invalid/duplicate photos
-    image_names = [i for i in dirtools.get_files(camera) if "[" not in i]
-    image_names.extend([i for i in INVALIDS if name in i])
-    image_names.extend([i for i in DUPES if name in i])
-
-    image_wl = dirtools.get_files(camera, fullpath=True)
-    image_wl.extend([i for i in INVALIDS_WL if name in i])
-    image_wl.extend([i for i in DUPES_WL if name in i])
-
-    image_nums = [get_image_num(i, name) for i in image_names if "[" not in i]
-    image_names = [x for _, x in sorted(zip(image_nums, image_names))]
-    image_wl = [x for _, x in sorted(zip(image_nums, image_wl))]
-
-    if "W" in name:
-        treatment = "W"
-    else:
-        treatment = "C"
-
-    for key in COMMUNITY_SETTINGS.keys():
-        if key in name:
-            site, start = COMMUNITY_SETTINGS[key]
-
-    plot = get_plot_num(name)
-
-    print("processing {}".format(name))
-    date = start
-    for img, imgname in zip(image_wl, image_names):
-        if imgname not in processed_already:
-            if imgname in INVALIDS:
-                entries.append(
-                    Entry(site, plot, treatment, img, date, null_quads))
-                date += dt.timedelta(days=1)
-                processed_already.append(imgname)
-            elif imgname in DUPES:
-                pass
-                processed_already.append(imgname)
-            else:
-                img_data = Image.open(img)
-                if do_quadrants:
-                    entries.append(
-                        Entry(site, plot, treatment, img, date,
-                              get_greenness_quadrants(img_data,
-                                                      poster_method_pixelCount,
-                                                      "RGB",
-                                                      params=(80, 90))))
-                else:
-                    entries.append(
-                        Entry(site, plot, treatment, img, date,
-                              get_greenness(img_data,
-                                            poster_method_pixelCount,
-                                            "RGB",
-                                            params=(80, 90))))
-                date += dt.timedelta(days=1)
-                processed_already.append(imgname)
-    return entries # OBSOLETE
-
-
-def process_camera_all_photos(zipped):
-    '''
-    Wrapper for processing a tuple of (camera, cameraname)
-    for multiprocessing. Uses new method (all photos per day)
-
-    This is not ideal, we could see significant gains by processing individual
-    or days worth of photos instead. Do something about this in the future.
-
-    Returns a list of Entry objects.
-    '''
-    camera, name, method, percentile = zipped
-    entries = []
-    processed_already = []
-    day_folders = dirtools.get_subdirs(camera, fullpath=True)
-    day_nums = [get_day_num(i) for i in day_folders]
-
-    day_folders = [x for _, x in sorted(zip(day_nums, day_folders))]
-
-    if "W" in name:
-        treatment = "W"
-    else:
-        treatment = "C"
-
-    for key in COMMUNITY_SETTINGS.keys():
-        if key in name:
-            site, start = COMMUNITY_SETTINGS[key]
-
-    plot = get_plot_num(name)
-
-    print("processing {}".format(name))
-    date = start
-    for day in day_folders:
-        values = []
-        image_wl = dirtools.get_files(day, fullpath=True)
-        image_names = dirtools.get_files(day, fullpath=False)
-        for img, imgname in zip(image_wl, image_names):
-            if imgname not in processed_already:
-                img_data = Image.open(img)
-                if do_quadrants:
-                    values.append(get_greenness_quadrants(img_data,
-                                                          method,
-                                                          "RGB",))
-                else:
-                    values.append(get_greenness(img_data,
-                                                method,
-                                                "RGB",))
-                processed_already.append(imgname)
-                # print(type(entries))
-                # print(entries)
-        entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
-                             (np.mean(values),
-                              np.std(values),
-                              np.nanpercentile(values, 50),
-                              np.nanpercentile(values, 75),
-                              np.nanpercentile(values, 90),
-                              np.nanpercentile(values, 95))))
-        date += dt.timedelta(days=1)
-    print("processing {}: ...done".format(name))
-    return entries
-
 def process_entire_camera_super_parallel(pool, camera, name, method, percentile):
     '''
-    Process an entire camera's worth of photos using a given multiprocessing pool. 
+    Process an entire camera's worth of photos using a
+    given multiprocessing pool.
     '''
-    entries = []
-    pack_worklist = []
-    processed_already = []
+    entries = []  # accumulator of CSV lines to write
+    pack_worklist = []  # worklist of image jobs to pass to the pool
+    processed_already = []  # accumulator to guard against duplicates
+
+    # get the day folders, then get a list of their numbers
+    # ensures that we process data chronologically.
     day_folders = dirtools.get_subdirs(camera, fullpath=True)
     day_nums = [get_day_num(i) for i in day_folders]
 
@@ -384,22 +271,25 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
     plot = get_plot_num(name)
 
     def process_pack(imgpack):
-        img_data = whitebalance.percentile_white_balance(np.array(Image.open(imgpack.img_dir)), 90)
+        # apply 90th percentile whitebalancing as pre-processing
+        img_data = whitebalance.percentile_white_balance(
+            np.array(Image.open(imgpack.img_dir)), 90)
         img_data *= 255
         if do_quadrants:
             val = get_greenness_quadrants(img_data,
-                                                  method,
-                                                  "RGB",)
+                                          method,
+                                          "RGB",)
         else:
             val = get_greenness(img_data,
-                                        method,
-                                        "RGB",)
+                                method,
+                                "RGB",)
         # print(val)
         # print(img_data) from when I was debugging the zeros issue
         return (imgpack.img_date, val)
 
     print("processing {}".format(name))
     date = start
+    # generate worklist
     for day in day_folders:
         values = []
         image_wl = dirtools.get_files(day, fullpath=True)
@@ -410,31 +300,36 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
                 processed_already.append(imgname)
 
         date += dt.timedelta(days=1)
-    results = list(tqdm.tqdm(pool.imap(process_pack, pack_worklist), total=len(pack_worklist)))
-    # results = pool.imap(process_pack, pack_worklist) # multiprocessed part
+    # execute all jobs across pool, tracking with progress bars.
+    results = list(
+        tqdm.tqdm(pool.imap(process_pack, pack_worklist), total=len(pack_worklist)))
     collated_values = {}
 
-    for result in results: # unpack and record the result of the pool mapping
-        if result[0] not in collated_values.keys(): # if date not recorded yet
-            collated_values.update({result[0] : [result[1]]})
+    # each result is a tuple: (date, greenness value)
+    # we use dictionary values because we now handle multiple greenness
+    # values per day. structure of this is {date : [val1, val2, ...]}
+
+    for result in results:  # unpack and record the result of the pool mapping
+        if result[0] not in collated_values.keys():  # if date not recorded yet
+            collated_values.update({result[0]: [result[1]]})
         else:
             collated_values[result[0]].append(result[1])
-    
 
-    for date in collated_values.keys(): # for each day, generate an entry.
+    for date in collated_values.keys():  # for each day, generate an entry.
         values = collated_values[date]
         # print(values)
         entries.append(Entry(site, plot, treatment, "ALL PHOTOS", date,
-        # look into doing a mode here too
+                             # look into doing a mode here too
                              (np.mean(values),
                               np.std(values),
                               np.nanpercentile(values, 50),
                               np.nanpercentile(values, 75),
                               np.nanpercentile(values, 90),
                               np.nanpercentile(values, 95))))
-        
+
     print("processing {}: ...done".format(name))
     return entries
+
 
 ''' this is for old non-super-parallel extraction
 if __name__ == "__main__":
@@ -469,7 +364,7 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     print("GREENNESS: initializing multiprocessing pool (using {} cores)"
           .format(mp.cpu_count()))
-    p = mp.Pool(mp.cpu_count())
+    p = mp.Pool(mp.cpu_count())  # Initialize pool
     percentile = SETTINGS.percentile
     print("{} worker processes started".format(mp.cpu_count()))
     for method, label in SETTINGS.runs:

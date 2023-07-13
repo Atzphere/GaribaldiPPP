@@ -1,7 +1,9 @@
 '''
-Extremely messy script to extract all images from a folder of AVIs and organize them.
-'''
+Extremely messy script to extract all images from a
+folder of AVIs and organize them.
 
+Now extracts ALL photos by default (not just colored) and timestamps them.
+'''
 
 
 import skvideo
@@ -14,9 +16,9 @@ import dirtools
 import dataloc
 import psutil
 import tqdm
+import datetime
 
-# only get the first 9 frames
-
+# grab all frames
 keep_frame_num = -1
 
 project_home = dirtools.get_parent_dir(os.getcwd(), depth=2)
@@ -26,6 +28,8 @@ camera_dir = dataloc.videos
 output_dir = dataloc.export
 errorNoColor = np.zeros((300, 300, 3))
 errorNoColor[:, :, 0] = 255
+errorFileEmpty = np.zeros((300, 300, 3))
+errorFileEmpty[:, :, 1] = 255
 
 problematics = {}  # date offsets
 # problematics is now obsolete, we run it with greenness extraction for now
@@ -47,10 +51,10 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
 
         numframes (int) : the number of frames to get.
     '''
-    avi 
+    avi
     # print("processing {}".format(os.path.basename(avi)))
     if numframes == -1:
-        return skvideo.io.vreader(avi)  
+        return skvideo.io.vreader(avi)
     else:
         return skvideo.io.vreader(avi, num_frames=numframes)
 
@@ -59,7 +63,7 @@ def is_grayscale(frame, samplex=5, sampley=5):
     '''
     Tries to determine if a given frame is grayscale.
     Does this by sampling regularly spaced pixels a given amount of times
-    if all these samples are monochrome, return True, else false.
+    if all these samples are monochrome, return True, else False.
 
     Samples a total of samplex * sampley points.
 
@@ -87,15 +91,21 @@ def is_grayscale(frame, samplex=5, sampley=5):
     return np.all([truthsRG, truthsGB])
 
 
-def get_colored_images(frames, campath, day, output, cname, date_offset=0):
+def process_avi(frames, campath, day, output, cname,
+                date_offset=0, reject_gray=False):
     '''
-    Gets all non-B&W images in an image sequence.
-    Useful for daylight detection from the phenocams - they
+    Gets all images in an image sequence.
+    Naively assigns a timestamp to each image by assuming each sequence starts
+    at 5:00 AM
+    Can be configured to only get colored images, which is
+    useful for daylight detection from the phenocams - they
     automatically switch from infrared (B&W) imaging to color
     when ambient light is high enough.
 
     We want this because the earlier in the day we take images,
     the lower the contrast from shadows is and the lower the contrast.
+
+    Also writes to file now.
 
     Parameters:
         frames : arraylike of ndarrays with shape (x, y, 3)
@@ -107,19 +117,26 @@ def get_colored_images(frames, campath, day, output, cname, date_offset=0):
 
     '''
     # print("processing frames...")
-    colored_frames = []
+    collected_frames = []
     for frame in frames:
-        if not is_grayscale(frame):
-            colored_frames.append(frame)
+        time = datetime.time(hour=5)
+        if not is_grayscale(frame) or not reject_gray:
+            collected_frames.append((frame, time))
+        time += datetime.timedelta(minutes=30)
+
     # print("...done")
     # print("RAM % used:", psutil.virtual_memory()[2])
     # print("trying result generation", end="\r")
     # print("done")
-    if len(colored_frames) != 0:
-        result = colored_frames
+    if len(collected_frames) != 0:
+        result = collected_frames
     else:
-        print("FRAME PROCESSING: NO COLORED FRAMES FOUND FOR A FILE")
-        result = [errorNoColor]
+        if reject_gray:
+            print("FRAME PROCESSING: NO COLORED FRAMES FOUND FOR A FILE")
+            result = [(errorNoColor, datetime.time(hour=1))]
+        else:
+            print("NO VALID FRAMES FOUND.")
+            result = [(errorFileEmpty, datetime.time(hour=1))]
 
     # print("trying generating camera_name", end="\r")
     try:
@@ -127,10 +144,9 @@ def get_colored_images(frames, campath, day, output, cname, date_offset=0):
     except Exception as e:
         print("DID NOT GO WELL")
         print(e)
-    #print("done")
     newpath = output + "/" + camera_name
 
-    # print("finished new path establishment")
+    # write to file
 
     try:
         if not os.path.exists(newpath):
@@ -153,11 +169,12 @@ def get_colored_images(frames, campath, day, output, cname, date_offset=0):
     else:
         print("Output folder already exists, using this.")
     print("writing to files...", end='')
-    for index, frame in enumerate(result):
-        skvideo.io.vwrite(newpath_day + "/{cname}_day{date:03d}_{num:03d}_.jpg".
+    for index, time_frame in enumerate(result):
+        skvideo.io.vwrite(newpath_day + "/{cname}_day{date:03d}_{num:03d}_{time}.jpg".
                           format(cname=camera_name,
                                  date=(day + date_offset),
-                                 num=(index)), frame)
+                                 num=(index),
+                                 time=time_frame[0]), time_frame[1])
     print(" done.")
 
 
@@ -167,7 +184,7 @@ def get_colored_images(frames, campath, day, output, cname, date_offset=0):
 
 def process_camera(camera_folder, data_folder="/100MEDIA/",
                    output=output_dir, numframes=keep_frame_num, date_offset=0,
-                   custom_file_name=""):
+                   custom_file_name="", reject_gray=False):
     '''
     Procceses a camera folder i.e. CASS_10W by going into its
     image data folder (default is /100MEDIA/ on Apeman cameras)
@@ -195,9 +212,9 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
                                    Defaults to the camera folder name.
 
     '''
-    camera_name = os.path.basename(camera_folder) # get camera name for labels
+    camera_name = os.path.basename(camera_folder)  # get camera name for labels
 
-    source = camera_folder + data_folder # get camera image data location
+    source = camera_folder + data_folder  # get camera image data location
 
     '''
     generate worklist of files to process, resorting stuff to
@@ -212,7 +229,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
     # print("sorting template: {}".format(sort_template))
     # print("sorted files: {}".format(files_sorted))
 
-    video_worklist = files_sorted # dirtools.get_files(source, fullpath=True)
+    video_worklist = files_sorted  # dirtools.get_files(source, fullpath=True)
     # print("video worklist: {v}".format(v=video_worklist))
 
     print("processing {cname} ({num} files)".format(
@@ -225,23 +242,12 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         '''
         day = input_tuple[0]
         path = input_tuple[1]
-        return get_colored_images(avi_to_imgseq(path, numframes), path, day, output, camera_name)
+        return process_avi(avi_to_imgseq(path, numframes),
+                           path, day, output, camera_name, reject_gray)
 
     for _ in tqdm.tqdm(p.map(func_wrapper, enumerate(video_worklist)), total=len(video_worklist)):
-        pass
-    # p.map(func_wrapper, enumerate(video_worklist))
+        pass  # for progress bar
 
-    # print("videos processed, writing to files...")
-
-
-'''
-    for index, frame in enumerate(results):
-        # NEED TO CHANGE THIS TO HANDLE MULTIPLE IMAGES/DAY
-        # RESULTS IS LIST OF LIST OF IMAGES ATM
-        skvideo.io.vwrite(newpath + "/{cname}_[{num:03d}].jpg".
-                          format(cname=camera_name,
-                          num=(index + date_offset)), frame)
-'''
 
 '''
 Everything works!
@@ -286,9 +292,10 @@ if __name__ == "__main__":
 
         if os.path.basename(camera) in problematics.keys():
             process_camera(
-                camera, date_offset=problematics[os.path.basename(camera)])
+                camera, date_offset=problematics[os.path.basename(camera)],
+                reject_gray=True)
         else:
-            process_camera(camera)
+            process_camera(camera, reject_gray=True)
 
     p.close()
     p.join()
