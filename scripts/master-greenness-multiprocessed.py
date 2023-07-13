@@ -305,6 +305,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
         image_names = dirtools.get_files(day, fullpath=False)
         for img, imgname in zip(image_wl, image_names):
             ref = img
+            print(get_timestamp(imgname))
             if get_timestamp(imgname) == "12:00:00":
                 print("reference image found.")
                 break
