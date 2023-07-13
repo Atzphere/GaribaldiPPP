@@ -158,7 +158,7 @@ class ImagePack:
 
 
 def get_timestamp(imgname):
-    return imgname[len(imgname) - 8: len(imgname)]
+    return imgname[len(imgname) - 12: len(imgname) - 4]
 
 
 
