@@ -175,7 +175,7 @@ def process_avi(frames, campath, day, output, cname,
                           format(cname=camera_name,
                                  date=(day + date_offset),
                                  num=(index),
-                                 time=time_frame[0]), time_frame[1])
+                                 time=time_frame[1]), time_frame[0])
     print(" done.")
 
 
