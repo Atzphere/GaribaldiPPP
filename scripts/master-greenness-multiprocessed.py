@@ -161,7 +161,6 @@ def get_timestamp(imgname):
     return imgname[len(imgname) - 12: len(imgname) - 4]
 
 
-
 def get_image_num(imgname, camname):
     return int(imgname.replace(camname + "_day", "").replace(".jpg", ""))
 
@@ -170,10 +169,12 @@ def get_day_num(dirname):
     daypos = dirname.index("day")
     return int(dirname[daypos + 3: daypos + 6])
 
+
 def colorbalance_by_reference(refvals, sample):
     sample_avgs = np.mean(sample, axis=(0, 1))
-    ratio = sample / refvals
+    ratio = sample_avgs / refvals
     return sample * ratio
+
 
 def get_greenness_quadrants(img, extractor: Callable, itype=None, params=()):
     '''
