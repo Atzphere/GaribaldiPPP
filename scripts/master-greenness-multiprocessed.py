@@ -63,7 +63,7 @@ def TWOG_RBi(img):
 # CONFIGURABLES:
 
 
-global_label = "JULY2023_COLORBAL_MEAN_STDEV_50P_75P_90P_95P"
+global_label = "aug2023_COLORBAL_ref_over_sample"
 
 '''
 SETTINGS = Setting((poster_method_pixelCount,
@@ -173,7 +173,7 @@ def get_day_num(dirname):
 def colorbalance_by_reference(refvals, sample):
     sample_avgs = np.mean(sample, axis=(0, 1))
     ratio = sample_avgs / refvals
-    return sample * ratio
+    return sample / ratio
 
 
 def get_greenness_quadrants(img, extractor: Callable, itype=None, params=()):
