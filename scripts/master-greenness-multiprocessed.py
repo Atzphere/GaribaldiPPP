@@ -63,7 +63,7 @@ def TWOG_RBi(img):
 # CONFIGURABLES:
 
 
-global_label = "aug2023_COLORBAL_ref_over_sample"
+global_label = "aug2023_COLORBAL_only"
 
 '''
 SETTINGS = Setting((poster_method_pixelCount,
@@ -282,9 +282,10 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
         # color balancing
         colorbal_image = colorbalance_by_reference(imgpack.ref_vals, raw_image)
         # apply 90th percentile whitebalancing as pre-processing
-        img_data = whitebalance.percentile_white_balance(
-            np.array(colorbal_image), 90)
-        img_data *= 255
+        # img_data = whitebalance.percentile_white_balance(
+        #    np.array(colorbal_image), 90)
+        # img_data *= 255
+        img_data = colorbal_image
         if do_quadrants:
             val = get_greenness_quadrants(img_data,
                                           method,
