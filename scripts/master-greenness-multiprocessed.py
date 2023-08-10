@@ -52,6 +52,7 @@ def poster_method_pixelCount(img, minvalue=80, maxvalue=90):
 def GCC(img):
     red, green, blue = np.mean(img[:, :, 0]), np.mean(
         img[:, :, 1]), np.mean(img[:, :, 2])
+    print(red, green, blue)
     return (green / (red + green + blue))
 
 
@@ -233,7 +234,7 @@ def get_greenness(img, extractor: Callable, itype=None, params=()):
     else:
         im = img
         print("not converting")
-    print(im)
+    print(np.max(im))
 
     return extractor(im, *params)
 
