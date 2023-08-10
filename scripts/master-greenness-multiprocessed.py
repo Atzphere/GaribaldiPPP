@@ -235,7 +235,9 @@ def get_greenness(img, extractor: Callable, itype=None, params=()):
         im = img
         print("not converting")
     print(np.max(im))
-
+    red, green, blue = np.mean(im[:, :, 0]), np.mean(
+        im[:, :, 1]), np.mean(im[:, :, 2])
+    print(red, green, blue)
     return extractor(im, *params)
 
 
