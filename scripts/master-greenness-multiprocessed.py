@@ -52,7 +52,6 @@ def poster_method_pixelCount(img, minvalue=80, maxvalue=90):
 def GCC(img):
     red, green, blue = np.mean(img[:, :, 0]), np.mean(
         img[:, :, 1]), np.mean(img[:, :, 2])
-    print(red, green, blue)
     return (green / (red + green + blue))
 
 
@@ -64,7 +63,7 @@ def TWOG_RBi(img):
 # CONFIGURABLES:
 
 
-global_label = "aug2023_COLORBAL_only"
+global_label = "aug2023_COLORBAL_only_actual"
 
 '''
 SETTINGS = Setting((poster_method_pixelCount,
@@ -237,7 +236,7 @@ def get_greenness(img, extractor: Callable, itype=None, params=()):
     # print(np.max(im))
     red, green, blue = np.mean(im[:, :, 0]), np.mean(
         im[:, :, 1]), np.mean(im[:, :, 2])
-    print("ground:", green / (red + green + blue))
+    # print("ground:", green / (red + green + blue))
     return extractor(im, *params)
 
 
@@ -300,7 +299,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
             val = get_greenness(img_data,
                                 method,
                                 "RGB",)
-            print("alt:", val)
+            # print("alt:", val)
         # print(val)
         # print(img_data) from when I was debugging the zeros issue
         return (imgpack.img_date, val)
