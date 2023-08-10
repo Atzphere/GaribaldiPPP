@@ -234,10 +234,10 @@ def get_greenness(img, extractor: Callable, itype=None, params=()):
     else:
         im = img
         print("not converting")
-    print(np.max(im))
+    # print(np.max(im))
     red, green, blue = np.mean(im[:, :, 0]), np.mean(
         im[:, :, 1]), np.mean(im[:, :, 2])
-    print(green / (red + green + blue))
+    print("ground:", green / (red + green + blue))
     return extractor(im, *params)
 
 
@@ -300,7 +300,7 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
             val = get_greenness(img_data,
                                 method,
                                 "RGB",)
-            print(val)
+            print("alt:", val)
         # print(val)
         # print(img_data) from when I was debugging the zeros issue
         return (imgpack.img_date, val)
