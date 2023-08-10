@@ -290,11 +290,11 @@ def process_entire_camera_super_parallel(pool, camera, name, method, percentile)
             val = get_greenness_quadrants(img_data,
                                           method,
                                           "RGB",)
-            print(val)
         else:
             val = get_greenness(img_data,
                                 method,
                                 "RGB",)
+            print(val)
         # print(val)
         # print(img_data) from when I was debugging the zeros issue
         return (imgpack.img_date, val)
