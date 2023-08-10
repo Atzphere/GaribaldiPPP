@@ -78,7 +78,7 @@ SETTINGS = Setting((poster_method_pixelCount,
                    percentile=75)
 '''
 
-SETTINGS = Setting((poster_method_pixelCount),
+SETTINGS = Setting((GCC),
                    ("poster_method" + global_label),
                    do_quadrants=False,
                    all_images=True,
