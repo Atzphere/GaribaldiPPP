@@ -13,7 +13,7 @@ def get_timestamp(imgname):
 images = []
 data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/export_all_photos_v3/MEAD_19C"
 days = dt.get_subdirs(data_folder, fullpath=True)
-
+    
 for day in days:
     image_wl = dt.get_files(day, fullpath=True)
     image_names = dt.get_files(day, fullpath=False)
@@ -34,7 +34,7 @@ def get_rgb(img):
 
 def create_collage(images):
     # io.imread(img)
-    images = [io.imread(img) for img in images]
+    images = [cv2.imread(img) for img in images]
     images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
               for image in images]
     for image in images:
