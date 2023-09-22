@@ -23,7 +23,7 @@ for day in days:
             # print("reference image found.")
             break
     images.append(ref)
-
+print(images)
 
 filler = Image.new('RGB', (IMAGE_WIDTH, IMAGE_HEIGHT))
 
