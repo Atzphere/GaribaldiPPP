@@ -12,8 +12,8 @@ data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_direct
 days = dt.get_subdirs(data_folder, fullpath=True)
 
 for day in days:
-    image_wl = dirtools.get_files(day, fullpath=True)
-    image_names = dirtools.get_files(day, fullpath=False)
+    image_wl = dt.get_files(day, fullpath=True)
+    image_names = dt.get_files(day, fullpath=False)
     for img, imgname in zip(image_wl, image_names):
         ref = img
         if get_timestamp(imgname) == "12:00:00":
