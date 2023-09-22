@@ -10,7 +10,7 @@ IMAGE_HEIGHT = 57
 
 def get_timestamp(imgname):
     return imgname[len(imgname) - 12: len(imgname) - 4]
-
+images = []
 data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/export_all_photos_v3/MEAD_19C"
 days = dt.get_subdirs(data_folder, fullpath=True)
 
@@ -40,7 +40,7 @@ def create_collage(images):
     images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
               for image in images]
     for image in images:
-        image = cv2.putText(img=image, text="{}, {}, {}".format(get_rgb(image)), org=(IMAGE_WIDTH // 2, IMAGE_HEIGHT // 2),
+        image = cv2.putText(img=image, text="{}, {}, {}".format(str(get_rgb(image))), org=(IMAGE_WIDTH // 2, IMAGE_HEIGHT // 2),
                             fontFace=3, fontScale=3, color=(255, 0, 0), thickness=5)
     h = w = np.ceil(len(images))
     while len(images) < h * w:
