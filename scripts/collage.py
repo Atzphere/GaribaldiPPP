@@ -23,7 +23,7 @@ for day in days:
             # print("reference image found.")
             break
     images.append(ref)
-print(images)
+
 
 filler = Image.new('RGB', (IMAGE_WIDTH, IMAGE_HEIGHT))
 
@@ -36,7 +36,8 @@ def get_rgb(img):
 
 
 def create_collage(images):
-    images = [io.imread(img) for img in images]
+    # io.imread(img)
+    images = [print(img) for img in images]
     images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
               for image in images]
     for image in images:
