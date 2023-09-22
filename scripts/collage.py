@@ -27,17 +27,14 @@ for day in days:
 
 filler = Image.new('RGB', (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-images = ["image1.png", "image2.png", "image3.png", "image4.png"]
-
 
 def get_rgb(img):
     return np.mean(img[:, :, 0]), np.mean(
         img[:, :, 1]), np.mean(img[:, :, 2])
 
-
 def create_collage(images):
     # io.imread(img)
-    images = [print(img) for img in images]
+    images = [io.imread(img) for img in images]
     images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
               for image in images]
     for image in images:
