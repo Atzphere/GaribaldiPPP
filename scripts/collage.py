@@ -8,6 +8,9 @@ import whitebalance
 IMAGE_WIDTH = 102
 IMAGE_HEIGHT = 57
 
+def get_timestamp(imgname):
+    return imgname[len(imgname) - 12: len(imgname) - 4]
+
 data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/export_all_photos_v3/MEAD_19C"
 days = dt.get_subdirs(data_folder, fullpath=True)
 
