@@ -47,7 +47,7 @@ def create_collage(images):
     for i in range(0, h):
         horos = []
         for i in range(0, w):
-            if len(images > 0):
+            if len(images) > 0:
                 horos.append(images.pop())
         verts.append(cv2.hconcat(horos))
     concat_images = cv2.vconcat(verts)
