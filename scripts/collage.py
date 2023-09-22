@@ -38,7 +38,7 @@ def create_collage(images):
     images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
               for image in images]
     for image in images:
-        image = cv2.putText(img=image, text="{}, {}, {}".format(get_rgb(image)), org=(IMAGE_WIDTH // 2, IMAGE_HEIGHT // 2),
+        image = cv2.putText(img=image, text="{}, {}, {}".format(*get_rgb(image)), org=(IMAGE_WIDTH // 2, IMAGE_HEIGHT // 2),
                             fontFace=3, fontScale=3, color=(255, 0, 0), thickness=5)
     h = w = np.ceil(len(images))
     while len(images) < h * w:
