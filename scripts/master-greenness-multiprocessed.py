@@ -229,10 +229,8 @@ def get_greenness(img, extractor: Callable, itype=None, params=()):
     '''
     if type(img) is not np.ndarray:
         im = np.array((img).convert(itype))
-        print("converting to RGB thing")
     else:
         im = img
-        print("not converting")
     # print(np.max(im))
     red, green, blue = np.mean(im[:, :, 0]), np.mean(
         im[:, :, 1]), np.mean(im[:, :, 2])
