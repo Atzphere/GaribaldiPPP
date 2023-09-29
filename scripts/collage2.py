@@ -4,10 +4,12 @@ from skimage import io
 import dirtools as dt
 import numpy as np
 import whitebalance
+import matplotlib
+from matplotlib import pyplot as plt
 scale = 3.0
 IMAGE_WIDTH = int(160 * scale)
 IMAGE_HEIGHT = int(90 * scale)
-
+matplotlib.use('GTK')
 
 def get_timestamp(imgname):
     return imgname[len(imgname) - 12: len(imgname) - 4]
@@ -43,6 +45,8 @@ def get_rgb(img):
 def create_collage(images):
     # io.imread(img)
     images = [cv2.imread(img) for img in images]
+    plt.imshow(images[0])
+    plt.show()
     images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
               for image in images]
     print(len(images))
