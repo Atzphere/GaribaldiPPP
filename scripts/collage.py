@@ -27,7 +27,7 @@ for day in days:
 
 
 # filler = Image.new('RGB', (IMAGE_WIDTH, IMAGE_HEIGHT))
-filler = np.zeroes((IMAGE_HEIGHT, IMAGE_WIDTH))# cv2.cvtColor(np.array(filler), cv2.COLOR_RGB2BGR)
+filler = np.zeros((IMAGE_HEIGHT, IMAGE_WIDTH))# cv2.cvtColor(np.array(filler), cv2.COLOR_RGB2BGR)
 
 def get_rgb(img):
     return np.mean(img[:, :, 0]), np.mean(
