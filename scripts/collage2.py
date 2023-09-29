@@ -44,7 +44,7 @@ def get_rgb(img):
 
 def create_collage(images):
     # io.imread(img)
-    images = [cv2.imread(img) for img in images]
+    images = [cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2RGB) for img in images]
     plt.imshow(images[0])
     plt.show()
     images = [cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)) * 255
