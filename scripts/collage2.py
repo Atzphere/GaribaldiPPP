@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 scale = 3.0
 IMAGE_WIDTH = int(160 * scale)
 IMAGE_HEIGHT = int(90 * scale)
-# matplotlib.use('GTK3Agg')
+matplotlib.use('tkagg')
 
 def get_timestamp(imgname):
     return imgname[len(imgname) - 12: len(imgname) - 4]
