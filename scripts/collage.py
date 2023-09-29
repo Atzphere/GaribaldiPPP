@@ -52,9 +52,10 @@ def create_collage(images):
         verts.append(cv2.hconcat(horos))
     prev = np.shape(verts[0])
     for v in verts:
+        print(np.shape(v))
         if np.shape(v) != prev:
             print("failure")
-            assert False
+            assert False    
         else:
             prev = np.shape(v)
     concat_images = cv2.vconcat(verts)
