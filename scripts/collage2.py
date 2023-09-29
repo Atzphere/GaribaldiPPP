@@ -13,7 +13,7 @@ def get_timestamp(imgname):
     return imgname[len(imgname) - 12: len(imgname) - 4]
 
 
-images = []
+source_imgs = []
 exp_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/GaribaldiPPP/scripts/collage/"
 data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/export_all_photos_v3/MEAD_19C"
 days = dt.get_subdirs(data_folder, fullpath=True)
@@ -22,12 +22,12 @@ for day in days:
     image_wl = dt.get_files(day, fullpath=True)
     image_names = dt.get_files(day, fullpath=False)
     for img, imgname in zip(image_wl, image_names):
-        print(day)
+        # print(day)
         ref = img
         if get_timestamp(imgname) == "12:00:00":
-            print("reference image found.")
+            # print("reference image found.")
             break
-    images.append(ref)
+    source_imgs.append(ref)
 
 
 # filler = Image.new('RGB', (IMAGE_WIDTH, IMAGE_HEIGHT))
@@ -66,3 +66,4 @@ def create_collage(images):
     image = canvas.convert("RGB")
     image.save(exp_folder + image_name)
 
+create_collage(source_imgs)
