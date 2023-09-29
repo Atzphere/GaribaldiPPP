@@ -5,7 +5,7 @@ import dirtools as dt
 import numpy as np
 import whitebalance
 import matplotlib
-matplotlib.use('tkagg')
+# matplotlib.use('tkagg')
 from matplotlib import pyplot as plt
 scale = 3.0
 IMAGE_WIDTH = int(160 * scale)
