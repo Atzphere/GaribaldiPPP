@@ -58,6 +58,10 @@ def create_collage(images):
                 im = images.pop(0)
                 if np.mean(im) < 1.1:
                     im = np.uint8(im * 255)
+                    print("converted")
+                else:
+                    print(np.mean(im))
+                print("pasted")
                 canvas.paste(Image.fromarray(im), i2 * IMAGE_WIDTH, i * IMAGE_HEIGHT)
             else:
                 break
