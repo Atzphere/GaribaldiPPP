@@ -4,8 +4,8 @@ from skimage import io
 import dirtools as dt
 import numpy as np
 import whitebalance
-IMAGE_WIDTH = 1280
-IMAGE_HEIGHT = 720
+IMAGE_WIDTH = 128
+IMAGE_HEIGHT = 72
 
 def get_timestamp(imgname):
     return imgname[len(imgname) - 12: len(imgname) - 4]
