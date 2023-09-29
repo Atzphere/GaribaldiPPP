@@ -63,7 +63,7 @@ def create_collage(images):
                     print(np.mean(im))
 
                 print("pasted")
-                canvas.paste(Image.fromarray(im), i2 * IMAGE_WIDTH, i * IMAGE_HEIGHT)
+                canvas.paste(Image.fromarray(im, "RGB"), i2 * IMAGE_WIDTH, i * IMAGE_HEIGHT)
             else:
                 break
 
