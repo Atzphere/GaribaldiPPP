@@ -53,6 +53,7 @@ def create_collage(images):
     prev = np.shape(verts[0])
     for v in verts:
         print(np.shape(v))
+        print(type(v))
         if np.shape(v) != prev:
             print("failure")
             assert False    
