@@ -49,14 +49,14 @@ def create_collage(images):
         images[n] = 255 - image
     plt.imshow(images[0])
     plt.show()
-    images = [cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)) * 255
-              for image in images]
-    #images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
+    #images = [cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)) * 255
     #          for image in images]
+    images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
+              for image in images]
     print(len(images))
     for image in images:
-        image = cv2.putText(img=image, text="{:.2f}, {:.2f}, {:.2f}".format(*get_rgb(image)), org=(IMAGE_WIDTH // 3, IMAGE_HEIGHT // 2),
-                            fontFace=3, fontScale=1, color=(255, 0, 0), thickness=5)
+        image = cv2.putText(img=image, text="{:.2f}, {:.2f}, {:.2f}".format(*get_rgb(image)), org=(IMAGE_WIDTH // 6, IMAGE_HEIGHT // 2),
+                            fontFace=3, fontScale=1, color=(255, 0, 0), thickness=3)
 
     h = w = int(np.ceil(np.sqrt(len(images))))
     canvas = Image.new("RGBA", (IMAGE_WIDTH * h, IMAGE_HEIGHT * w))
