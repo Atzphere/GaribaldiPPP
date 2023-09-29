@@ -52,6 +52,11 @@ def create_collage(images):
                 horos.append(images.pop())
         verts.append(cv2.hconcat(horos))
     prev = np.shape(verts[0])
+    for n, v in enumerate(verts):
+        image_name = "result{}.jpg".format(n)
+        image = image.convert("RGB")
+        image.save(exp_folder + image_name)
+        return image_name
 '''
     for v in verts:
         print(np.shape(v))
@@ -64,11 +69,6 @@ def create_collage(images):
     concat_images = cv2.vconcat(verts)
     image = Image.fromarray(concat_images)
 '''
-    for n, v in enumerate(verts):
-        image_name = "result{}.jpg".format(n)
-        image = image.convert("RGB")
-        image.save(exp_folder + image_name)
-        return image_name
 '''
     # Image path
     image_name = "result.jpg"
