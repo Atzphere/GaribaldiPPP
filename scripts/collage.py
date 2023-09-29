@@ -38,11 +38,12 @@ def create_collage(images):
     images = [cv2.imread(img) for img in images]
     images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
               for image in images]
+    print(len(images))
     for image in images:
         image = cv2.putText(img=image, text="{}, {}, {}".format(*get_rgb(image)), org=(IMAGE_WIDTH // 2, IMAGE_HEIGHT // 2),
-                            fontFace=3, fontScale=3, color=(255, 0, 0), thickness=5)
+                            fontFace=3, fontScale=1, color=(255, 0, 0), thickness=5)
     h = w = int(np.ceil(np.sqrt(len(images))))
-    while len(images) < h * w:
+    while len(images) < (h * w):
         images.append(filler)
     print("square?", len(images))
     verts = []
@@ -52,6 +53,7 @@ def create_collage(images):
             if len(images) > 0:
                 horos.append(images.pop(0))
         verts.append(cv2.hconcat(horos))
+    print(len(verts))
     prev = np.shape(verts[0])
     for n, v in enumerate(verts):
         print(np.shape(v))
