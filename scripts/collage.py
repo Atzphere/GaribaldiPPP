@@ -4,8 +4,9 @@ from skimage import io
 import dirtools as dt
 import numpy as np
 import whitebalance
-IMAGE_WIDTH = 128
-IMAGE_HEIGHT = 72
+scale = 3.0
+IMAGE_WIDTH = int(160 * scale)
+IMAGE_HEIGHT = int(90 * scale)
 
 def get_timestamp(imgname):
     return imgname[len(imgname) - 12: len(imgname) - 4]
@@ -41,8 +42,9 @@ def create_collage(images):
         image = cv2.putText(img=image, text="{}, {}, {}".format(*get_rgb(image)), org=(IMAGE_WIDTH // 2, IMAGE_HEIGHT // 2),
                             fontFace=3, fontScale=3, color=(255, 0, 0), thickness=5)
     h = w = int(np.ceil(len(images)))
-    while len(images) < h * w:
+    while len(images) <= h * w:
         images.append(filler)
+    print("square?", len(images))
     verts = []
     for i in range(0, h):
         horos = []
