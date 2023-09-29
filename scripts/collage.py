@@ -54,6 +54,7 @@ def create_collage(images):
     prev = np.shape(verts[0])
     for n, v in enumerate(verts):
         image_name = "result{}.jpg".format(n)
+        image = Image.fromarray(image)
         image = image.convert("RGB")
         image.save(exp_folder + image_name)
         return image_name
