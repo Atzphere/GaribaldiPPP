@@ -53,6 +53,7 @@ def create_collage(images):
         verts.append(cv2.hconcat(horos))
     prev = np.shape(verts[0])
     for n, v in enumerate(verts):
+        print(np.shape(v))
         image_name = "result{}.jpg".format(n)
         image = Image.fromarray((image * 255).astype(np.uint8))
         image = image.convert("RGB")
