@@ -11,6 +11,7 @@ IMAGE_HEIGHT = 57
 def get_timestamp(imgname):
     return imgname[len(imgname) - 12: len(imgname) - 4]
 images = []
+exp_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/GaribaldiPPP/scripts/collage/"
 data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/export_all_photos_v3/MEAD_19C"
 days = dt.get_subdirs(data_folder, fullpath=True)
     
@@ -51,6 +52,7 @@ def create_collage(images):
                 horos.append(images.pop())
         verts.append(cv2.hconcat(horos))
     prev = np.shape(verts[0])
+'''
     for v in verts:
         print(np.shape(v))
         print(type(v))
@@ -61,12 +63,19 @@ def create_collage(images):
             prev = np.shape(v)
     concat_images = cv2.vconcat(verts)
     image = Image.fromarray(concat_images)
-
+'''
+    for n, v in enumerate(verts):
+        image_name = "result{}.jpg".format(n)
+        image = image.convert("RGB")
+        image.save(exp_folder + image_name)
+        return image_name
+'''
     # Image path
     image_name = "result.jpg"
     image = image.convert("RGB")
     image.save(f"{image_name}")
     return image_name
+    '''
 
 
 # image1 on top left, image2 on top right, image3 on bottom left,image4 on bottom right
