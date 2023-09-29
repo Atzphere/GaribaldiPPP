@@ -36,6 +36,8 @@ def get_rgb(img):
 def create_collage(images):
     # io.imread(img)
     images = [cv2.imread(img) for img in images]
+    for image in images:
+        print(np.dtype(image))
     images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
               for image in images]
     for image in images:
@@ -50,7 +52,7 @@ def create_collage(images):
         horos = []
         for i in range(0, w):
             if len(images) > 0:
-                horos.append(images.pop([0]))
+                horos.append(images.pop(0))
         verts.append(cv2.hconcat(horos))
     prev = np.shape(verts[0])
     for n, v in enumerate(verts):
