@@ -19,9 +19,10 @@ for day in days:
     image_wl = dt.get_files(day, fullpath=True)
     image_names = dt.get_files(day, fullpath=False)
     for img, imgname in zip(image_wl, image_names):
+        print(day)
         ref = img
         if get_timestamp(imgname) == "12:00:00":
-            # print("reference image found.")
+            print("reference image found.")
             break
     images.append(ref)
 
