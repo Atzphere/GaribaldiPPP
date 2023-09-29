@@ -26,8 +26,8 @@ for day in days:
     images.append(ref)
 
 
-filler = Image.new('RGB', (IMAGE_WIDTH, IMAGE_HEIGHT))
-filler = cv2.cvtColor(np.array(filler), cv2.COLOR_RGB2BGR)
+# filler = Image.new('RGB', (IMAGE_WIDTH, IMAGE_HEIGHT))
+filler = np.zeroes((IMAGE_HEIGHT, IMAGE_WIDTH))# cv2.cvtColor(np.array(filler), cv2.COLOR_RGB2BGR)
 
 def get_rgb(img):
     return np.mean(img[:, :, 0]), np.mean(
@@ -36,8 +36,6 @@ def get_rgb(img):
 def create_collage(images):
     # io.imread(img)
     images = [cv2.imread(img) for img in images]
-    for image in images:
-        print(np.dtype(image))
     images = [whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)), 90) * 255
               for image in images]
     for image in images:
