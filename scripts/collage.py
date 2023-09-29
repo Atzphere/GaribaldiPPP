@@ -42,7 +42,7 @@ def create_collage(images):
         image = cv2.putText(img=image, text="{}, {}, {}".format(*get_rgb(image)), org=(IMAGE_WIDTH // 2, IMAGE_HEIGHT // 2),
                             fontFace=3, fontScale=3, color=(255, 0, 0), thickness=5)
     h = w = int(np.ceil(len(images)))
-    while len(images) <= h * w:
+    while len(images) < h * w:
         images.append(filler)
     print("square?", len(images))
     verts = []
