@@ -53,7 +53,7 @@ def create_collage(images):
     plt.show()
     # images = [cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)) * 255
     #          for image in images]
-    images = [int(whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT) / 255) * 255), 70)
+    images = [int(whitebalance.percentile_white_balance(cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)) / 255) * 255, 70)
               for image in images]
     print(len(images))
     for image in images:
