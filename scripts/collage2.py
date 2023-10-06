@@ -37,8 +37,14 @@ for day in days:
 # cv2.cvtColor(np.array(filler), cv2.COLOR_RGB2BGR)
 filler = np.zeros((IMAGE_HEIGHT, IMAGE_WIDTH))
 
+def get_ccc(img):
+    red, green, blue = np.mean(img[:, :, 0]), np.mean(
+    img[:, :, 1]), np.mean(img[:, :, 2])
+    return (red / (red + green + blue), green / (red + green + blue), blue / (red + green + blue))
 
 def get_rgb(img):
+
+    sum = np.mean()
     return np.mean(img[:, :, 0]), np.mean(
         img[:, :, 1]), np.mean(img[:, :, 2])
 
