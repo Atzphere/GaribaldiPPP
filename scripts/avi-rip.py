@@ -213,9 +213,10 @@ if __name__ == "__main__":
                     camera, date_offset=problematics[os.path.basename(camera)])
             else:
                 process_camera(camera)
-        except:
+        except Exception as e:
             print("something went wrong with {cam}".format(
                 cam=os.path.abspath(camera)))
+            raise
     p.close()
     p.join()
     print("finished.")
