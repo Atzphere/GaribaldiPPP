@@ -1,7 +1,7 @@
 import os
 import numpy as np
-numpy.float = numpy.float64
-numpy.int = numpy.int_
+np.float = np.float64
+np.int = np.int_
 import skvideo
 import skvideo.io
 import multiprocess as mp
