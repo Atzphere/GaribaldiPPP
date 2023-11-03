@@ -6,10 +6,12 @@ Now extracts ALL photos by default (not just colored) and timestamps them.
 '''
 
 
-import skvideo
-import skvideo.io
 import os
 import numpy as np
+np.float = np.float64
+np.int = np.int_
+import skvideo
+import skvideo.io
 import multiprocess as mp
 # from matplotlib import pyplot as plt
 import dirtools
@@ -144,7 +146,7 @@ def process_avi(frames, campath, day, output, cname,
         camera_name = cname
     except Exception as e:
         print("DID NOT GO WELL")
-        print(e)
+        raise
     newpath = output + "/" + camera_name
 
     # write to file
@@ -230,8 +232,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
     # print("sorting template: {}".format(sort_template))
     # print("sorted files: {}".format(files_sorted))
 
-    video_worklist = files_sorted  # dirtools.get_files(source, fullpath=True)
-    # print("video worklist: {v}".format(v=video_worklist))
+    video_worklist = files_sorted
 
     print("processing {cname} ({num} files)".format(
         cname=camera_name, num=len(video_worklist)))
