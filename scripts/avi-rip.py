@@ -1,7 +1,9 @@
-import skvideo
-import skvideo.io
 import os
 import numpy as np
+numpy.float = numpy.float64
+numpy.int = numpy.int_
+import skvideo
+import skvideo.io
 import multiprocess as mp
 from matplotlib import pyplot as plt
 import dirtools
