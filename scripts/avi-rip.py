@@ -147,15 +147,15 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
     account for some cameras bugging out and restarting their counts.
     '''
     files = dirtools.get_files(source)
+    video_worklist = dirtools.get_files(source, fullpath=True)
     sort_template = map((lambda f: ("zzzzz" + f) if "(" in f else f), files)
     files_sorted = [s for _, s in sorted(
-        zip(sort_template, files), key=lambda pair: pair[0])]
+        zip(sort_template, video_worklist), key=lambda pair: pair[0])]
 
-    video_worklist = dirtools.get_files(source, fullpath=True)
     # print("video worklist: {v}".format(v=video_worklist))
 
     print("processing {cname} ({num} files)".format(
-        cname=camera_name, num=len(video_worklist)))
+        cname=camera_name, num=len(files_sorted)))
 
     def func_wrapper(path):
         '''
@@ -164,7 +164,7 @@ def process_camera(camera_folder, data_folder="/100MEDIA/",
         '''
         return get_first_colored(avi_to_imgseq(path, numframes))
 
-    results = p.map(func_wrapper, video_worklist)
+    results = p.map(func_wrapper, files_sorted)
 
     newpath = output + "/" + camera_name
 
