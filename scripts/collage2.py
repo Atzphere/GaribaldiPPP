@@ -73,6 +73,7 @@ def create_collage(images):
     image.save(exp_folder + image_name)
 
 for data_folder in cam_folder:
+    print(data_folder[148:])
     source_imgs = []
     # data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2022_processed_photos/export_all_photos_v3/MEAD_19C"
     nums = [int(x[-3:]) for x in dt.get_subdirs(data_folder, fullpath=True)]
