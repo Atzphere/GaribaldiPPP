@@ -11,28 +11,12 @@ scale = 3.0
 IMAGE_WIDTH = int(160 * scale)
 IMAGE_HEIGHT = int(90 * scale)
 
+cam_folder = dt.get_subdirs("/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2022_processed_photos/export_all_photos_v3")
+exp_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/GaribaldiPPP/scripts/collage/"
 
 def get_timestamp(imgname):
     return imgname[len(imgname) - 12: len(imgname) - 4]
 
-
-source_imgs = []
-exp_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/GaribaldiPPP/scripts/collage/"
-data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2022_processed_photos/export_all_photos_v3/MEAD_19C"
-nums = [int(x[-3:]) for x in dt.get_subdirs(data_folder, fullpath=True)]
-days = [x for _, x in sorted(zip(nums, dt.get_subdirs(data_folder, fullpath=True)))]
-print([int(x[-3:]) for x in days])
-
-for day in days:
-    image_wl = dt.get_files(day, fullpath=True)
-    image_names = dt.get_files(day, fullpath=False)
-    for img, imgname in zip(image_wl, image_names):
-        # print(day)
-        ref = img
-        if get_timestamp(imgname) == "12:00:00":
-            # print("reference image found.")
-            break
-    source_imgs.append(ref)
 
 
 # filler = Image.new('RGB', (IMAGE_WIDTH, IMAGE_HEIGHT))
@@ -55,8 +39,8 @@ def create_collage(images):
               for img in images]
     for n, image in enumerate(images):
         images[n] = 255 - image
-    plt.imshow(images[0])
-    plt.show()
+    #plt.imshow(images[0])
+    #plt.show()
     images = [cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)) * 255
               for image in images]
     #images = [whitebalance.percentile_white_balance((cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT))), 70)
@@ -78,15 +62,33 @@ def create_collage(images):
                 else:
                     print(np.mean(im))
 
-                print("pasted")
+                #print("pasted")
                 canvas.paste(Image.fromarray(im, "RGB"),
                              (i2 * IMAGE_WIDTH, i * IMAGE_HEIGHT))
             else:
                 break
 
-    image_name = "result.jpg"
+    image_name = "result_{}.jpg".format(data_folder[147:])
     image = canvas.convert("RGB")
     image.save(exp_folder + image_name)
 
+for data_folder in cam_folder:
+    source_imgs = []
+    # data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2022_processed_photos/export_all_photos_v3/MEAD_19C"
+    nums = [int(x[-3:]) for x in dt.get_subdirs(data_folder, fullpath=True)]
+    days = [x for _, x in sorted(zip(nums, dt.get_subdirs(data_folder, fullpath=True)))]
+    print([int(x[-3:]) for x in days])
 
-create_collage(source_imgs)
+    for day in days:
+        image_wl = dt.get_files(day, fullpath=True)
+        image_names = dt.get_files(day, fullpath=False)
+        for img, imgname in zip(image_wl, image_names):
+            # print(day)
+            ref = img
+            if get_timestamp(imgname) == "12:00:00":
+                # print("reference image found.")
+                break
+
+        source_imgs.append(ref)
+
+    create_collage(source_imgs)
