@@ -19,8 +19,9 @@ def get_timestamp(imgname):
 source_imgs = []
 exp_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/GaribaldiPPP/scripts/collage/"
 data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2022_processed_photos/export_all_photos_v3/MEAD_19C"
-days = sort(dt.get_subdirs(data_folder, fullpath=True))
-print(days)
+nums = [int(x[-3:]) for x in days]
+days = [x for _, x in sorted(zip(nums, dt.get_subdirs(data_folder, fullpath=True)))]
+print([int(x[-3:]) for x in days])
 
 for day in days:
     image_wl = dt.get_files(day, fullpath=True)
