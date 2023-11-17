@@ -68,7 +68,7 @@ def create_collage(images):
             else:
                 break
 
-    image_name = "result_{}.jpg".format(data_folder[144:])
+    image_name = "result_{}.jpg".format(data_folder[145:])
     image = canvas.convert("RGB")
     image.save(exp_folder + image_name)
     del canvas
