@@ -1,6 +1,6 @@
 import cv2
 from PIL import Image, ImageFont, ImageDraw
-from skimage import io
+# from skimage import io
 import dirtools as dt
 import numpy as np
 import whitebalance
