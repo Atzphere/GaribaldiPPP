@@ -71,6 +71,7 @@ def create_collage(images):
     image_name = "result_{}.jpg".format(data_folder[148:])
     image = canvas.convert("RGB")
     image.save(exp_folder + image_name)
+    del canvas
 
 for data_folder in cam_folder:
     print(data_folder[148:])
@@ -78,9 +79,10 @@ for data_folder in cam_folder:
     # data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2022_processed_photos/export_all_photos_v3/MEAD_19C"
     nums = [int(x[-3:]) for x in dt.get_subdirs(data_folder, fullpath=True)]
     days = [x for _, x in sorted(zip(nums, dt.get_subdirs(data_folder, fullpath=True)))]
-    print([int(x[-3:]) for x in days])
+    # print([int(x[-3:]) for x in days])
 
     for day in days:
+        print("day finished")
         image_wl = dt.get_files(day, fullpath=True)
         image_names = dt.get_files(day, fullpath=False)
         for img, imgname in zip(image_wl, image_names):
