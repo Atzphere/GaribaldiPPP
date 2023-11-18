@@ -56,6 +56,7 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
     '''
     avi
     # print("processing {}".format(os.path.basename(avi)))
+    print(avi)
     if numframes == -1:
         return skvideo.io.vreader(avi)
     else:
@@ -173,11 +174,12 @@ def process_avi(frames, campath, day, output, cname,
         print("Output folder already exists, using this.")
     print("writing to files...", end='')
     for index, time_frame in enumerate(result):
-        skvideo.io.vwrite(newpath_day + "/{cname}_day{date:03d}_{num:03d}_{time}.jpg".
-                          format(cname=camera_name,
-                                 date=(day + date_offset),
-                                 num=(index),
-                                 time=time_frame[1]), time_frame[0])
+        try:
+            skvideo.io.vwrite(newpath_day + "/{cname}_day{date:03d}_{num:03d}_{time}.jpg".
+                              format(cname=camera_name,
+                                     date=(day + date_offset),
+                                     num=(index),
+                                     time=time_frame[1]), time_frame[0])
     print(" done.")
 
 
