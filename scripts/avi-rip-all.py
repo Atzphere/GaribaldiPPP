@@ -33,6 +33,8 @@ errorNoColor = np.zeros((300, 300, 3))
 errorNoColor[:, :, 0] = 255
 errorFileEmpty = np.zeros((300, 300, 3))
 errorFileEmpty[:, :, 1] = 255
+errorCorrupt = np.zeros((300, 300, 3))
+errorCorrupt[:, :, 2] = 255
 
 problematics = {}  # date offsets
 # problematics is now obsolete, we run it with greenness extraction for now
@@ -61,7 +63,7 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
             return list(skvideo.io.vreader(avi))
         except Exception as e:
             print(f"{avi} was probematic")
-            raise
+            return [errorCorrupt]
     else:
         return skvideo.io.vreader(avi, num_frames=numframes)
 
