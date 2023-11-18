@@ -13,8 +13,8 @@ from tqdm import tqdm
 import pathlib
 import shutil
 
-PRIMARY_DIR = ""
-SECONDARY_DIR = ""
+PRIMARY_DIR = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2023_processed_photos/export_all_photos/"
+SECONDARY_DIR = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2023_processed_photos/export_all_photos_sept/"
 
 def get_day_num(dirname):
     daypos = dirname.index("day")
