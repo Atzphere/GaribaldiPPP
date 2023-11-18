@@ -56,9 +56,12 @@ def avi_to_imgseq(avi, numframes=keep_frame_num):
     '''
     avi
     # print("processing {}".format(os.path.basename(avi)))
-    print(avi)
     if numframes == -1:
-        return skvideo.io.vreader(avi)
+        try:
+            return list(skvideo.io.vreader(avi))
+        except Exception as e:
+            print(f"{avi} was probematic")
+            raise
     else:
         return skvideo.io.vreader(avi, num_frames=numframes)
 
