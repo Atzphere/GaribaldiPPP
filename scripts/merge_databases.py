@@ -56,7 +56,7 @@ if choice == "y":
         print("Starting merge from day {}".format(ltd))
         for day in tqdm(source_days, desc=os.path.basename(target_cam)):
             ltd += 1
-            newday_path = PRIMARY_DIR+f'day{ltd:03}/'
+            newday_path = PRIMARY_DIR+os.path.basename(target_cam)+f'/day{ltd:03}/'
             pathlib.Path(newday_path).mkdir(parents=True, exist_ok=True)
             for file in dt.get_files(day, fullpath=True):
                 shutil.copyfile(file, newday_path + reassign_image_date(os.path.basename(file), ltd))
