@@ -7,6 +7,9 @@ import whitebalance
 import matplotlib
 # matplotlib.use('tkagg')
 from matplotlib import pyplot as plt
+from tqdm import tqdm
+import os
+
 scale = 3.0
 IMAGE_WIDTH = int(160 * scale)
 IMAGE_HEIGHT = int(90 * scale)
@@ -81,8 +84,7 @@ for data_folder in cam_folder:
     days = [x for _, x in sorted(zip(nums, dt.get_subdirs(data_folder, fullpath=True)))]
     # print([int(x[-3:]) for x in days])
 
-    for day in days:
-        print("day finished")
+    for day in tqdm(days, desc=os.path.basename(data_folder)):
         image_wl = dt.get_files(day, fullpath=True)
         image_names = dt.get_files(day, fullpath=False)
         for img, imgname in zip(image_wl, image_names):

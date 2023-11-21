@@ -16,13 +16,16 @@ import shutil
 PRIMARY_DIR = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2023_processed_photos/export_all_photos/"
 SECONDARY_DIR = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2023_processed_photos/export_all_photos_sept/"
 
+
 def get_day_num(dirname):
     daypos = dirname.index("day")
     return int(dirname[daypos + 3: daypos + 6])
 
+
 def reassign_image_date(imgname, newnum):
     s1, s2, s3 = imgname.partition("day")
     return s1 + s2 + f"{newnum:03}" + s3[3:]
+
 
 inc = "Target and source folders are not compatible. Make sure naming is consistent."
 
@@ -55,12 +58,13 @@ if choice == "y":
         print("Starting merge from day {}".format(ltd))
         for day in tqdm(source_days, desc=os.path.basename(target_cam)):
             ltd += 1
-            newday_path = PRIMARY_DIR+os.path.basename(target_cam)+f'/day{ltd:03}/'
+            newday_path = PRIMARY_DIR + \
+                os.path.basename(target_cam) + f'/day{ltd:03}/'
             pathlib.Path(newday_path).mkdir(parents=True, exist_ok=True)
             for file in dt.get_files(day, fullpath=True):
-                shutil.copyfile(file, newday_path + reassign_image_date(os.path.basename(file), ltd))
-
-
+                shutil.copyfile(
+                    file, newday_path + reassign_image_date(os.path.basename(file), ltd))
+    print("merge completed, you may now delete the source folder.")
 
 
 else:
