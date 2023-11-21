@@ -73,11 +73,12 @@ def create_collage(images):
 
     image_name = "result_{}.jpg".format(data_folder[145:])
     image = canvas.convert("RGB")
+    print("saving...")
     image.save(exp_folder + image_name)
     del canvas
 
 for data_folder in cam_folder:
-    print(data_folder[145:])
+    # print(data_folder[145:])
     source_imgs = []
     # data_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2022_processed_photos/export_all_photos_v3/MEAD_19C"
     nums = [int(x[-3:]) for x in dt.get_subdirs(data_folder, fullpath=True)]
@@ -95,5 +96,6 @@ for data_folder in cam_folder:
                 break
 
         source_imgs.append(ref)
+    print(f"...done {os.path.basename(data_folder)}, building collage")
 
     create_collage(source_imgs)
