@@ -51,7 +51,6 @@ if choice == "y":
         target_days = sorted(dt.get_subdirs(target_cam))
         source_days = sorted(dt.get_subdirs(source_cam, fullpath=True))
         print("\nConsolidating {}:".format(os.path.basename(target_cam)))
-        print(target_days)
         ltd = get_day_num(target_days[-1])  # last target day
         print("Starting merge from day {}".format(ltd))
         for day in tqdm(source_days, desc=os.path.basename(target_cam)):
