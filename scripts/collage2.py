@@ -14,7 +14,7 @@ scale = 3.0
 IMAGE_WIDTH = int(160 * scale)
 IMAGE_HEIGHT = int(90 * scale)
 
-cam_folder = dt.get_subdirs("/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2022_processed_photos/export_all_photos_v3", fullpath=True)
+cam_folder = dt.get_subdirs("/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2023_processed_photos/export_all_photos", fullpath=True)
 exp_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/GaribaldiPPP/scripts/collage_2023/"
 
 def get_timestamp(imgname):
