@@ -39,23 +39,22 @@ def get_rgb(img):
 def create_collage(images):
     # io.imread(img)
     images = [cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2RGB)
-              for img in images]
-    for n, image in enumerate(images):
+              for img in tqdm(images, desc="color space trans. pt.1")]
+    for n, image in tqdm(enumerate(images), desc="color space trans. pt.2"):
         images[n] = 255 - image
     #plt.imshow(images[0])
     #plt.show()
     images = [cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT)) * 255
-              for image in images]
+              for image in tqdm(images, desc="resize")]
     #images = [whitebalance.percentile_white_balance((cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT))), 70)
     #          for image in images]
-    print(len(images))
-    for n, image in enumerate(images):
+    for n, image in tqdm(enumerate(images), desc="apply image labels"):
         image = cv2.putText(img=image, text="day {}\n{:.2f}, {:.2f}, {:.2f}".format(n, *get_ccc(image)), org=(IMAGE_WIDTH // 6, IMAGE_HEIGHT // 2),
                             fontFace=3, fontScale=1, color=(255, 0, 0), thickness=3)
         pass
     h = w = int(np.ceil(np.sqrt(len(images))))
     canvas = Image.new("RGBA", (IMAGE_WIDTH * h, IMAGE_HEIGHT * w))
-    for i in range(0, h):
+    for i in tqdm(range(0, h), desc="pasting canvas"):
         for i2 in range(0, w):
             if len(images) > 0:
                 im = images.pop(0)
@@ -65,7 +64,6 @@ def create_collage(images):
                 else:
                     print(np.mean(im))
 
-                #print("pasted")
                 canvas.paste(Image.fromarray(im, "RGB"),
                              (i2 * IMAGE_WIDTH, i * IMAGE_HEIGHT))
             else:
