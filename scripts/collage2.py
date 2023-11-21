@@ -49,8 +49,8 @@ def create_collage(images):
     #images = [whitebalance.percentile_white_balance((cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT))), 70)
     #          for image in images]
     print(len(images))
-    for image in images:
-        image = cv2.putText(img=image, text="{:.2f}, {:.2f}, {:.2f}".format(*get_ccc(image)), org=(IMAGE_WIDTH // 6, IMAGE_HEIGHT // 2),
+    for n, image in enumerate(images):
+        image = cv2.putText(img=image, text="day {}\n{:.2f}, {:.2f}, {:.2f}".format(n, *get_ccc(image)), org=(IMAGE_WIDTH // 6, IMAGE_HEIGHT // 2),
                             fontFace=3, fontScale=1, color=(255, 0, 0), thickness=3)
         pass
     h = w = int(np.ceil(np.sqrt(len(images))))
