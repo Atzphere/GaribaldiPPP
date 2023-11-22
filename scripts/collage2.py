@@ -42,6 +42,7 @@ def create_collage(images):
         print(f"processing {img}")
         read = cv2.imread(img)
         print("read image.")
+        print(read)
         return cv2.cvtColor(read, cv2.COLOR_BGR2RGB)
     images = [color(img)
               for img in tqdm(images, desc="color space trans. pt.1")]
