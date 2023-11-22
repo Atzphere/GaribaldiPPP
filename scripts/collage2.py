@@ -14,7 +14,7 @@ scale = 3.0
 IMAGE_WIDTH = int(160 * scale)
 IMAGE_HEIGHT = int(90 * scale)
 
-cam_folder = dt.get_subdirs("/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2023_processed_photos/export_all_photos", fullpath=True)
+cam_folder = dt.get_subdirs("/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/2022_processed_photos/export_all_photos_v3", fullpath=True)
 exp_folder = "/home/azhao/projects/def-nbl/Garibaldi_Lake_shared/working_directories/azhao_pheno_processing_workingdir/GaribaldiPPP/scripts/collage_2023/"
 
 def get_timestamp(imgname):
@@ -38,7 +38,12 @@ def get_rgb(img):
 
 def create_collage(images):
     # io.imread(img)
-    images = [cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2RGB)
+    def color(img):
+        print(f"processing {img}")
+        read = cv2.imread(img)
+        print("read image.")
+        return cv2.cvtColor(read, cv2.COLOR_BGR2RGB)
+    images = [color(img)
               for img in tqdm(images, desc="color space trans. pt.1")]
     for n, image in tqdm(enumerate(images), desc="color space trans. pt.2"):
         images[n] = 255 - image
